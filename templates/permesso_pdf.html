@@ -5,7 +5,7 @@
   <style>
     @page {
       size: A4;
-      margin: 25mm 20mm 20mm 20mm;
+      margin: 10mm 20mm 20mm 20mm;
     }
 
     * {
@@ -21,6 +21,45 @@
       line-height: 1.4;
     }
 
+    /* ── Header intestazione ─────────────────────────────────── */
+    table.intestazione {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 14pt;
+    }
+
+    table.intestazione td {
+      vertical-align: middle;
+      padding: 0;
+    }
+
+    td.logo-cell {
+      width: 28%;
+    }
+
+    td.logo-cell img {
+      max-width: 100%;
+      max-height: 55pt;
+      display: block;
+    }
+
+    td.ente-cell {
+      width: 72%;
+      text-align: center;
+      font-size: 9pt;
+      line-height: 1.5;
+    }
+
+    td.ente-cell p {
+      margin: 0;
+    }
+
+    td.ente-cell p.ente-nome {
+      font-weight: bold;
+      font-size: 10pt;
+    }
+
+    /* ── Titolo ──────────────────────────────────────────────── */
     h1.titolo {
       text-align: center;
       font-size: 13pt;
@@ -112,7 +151,14 @@
     td.firma-cell .label {
       font-weight: bold;
       display: block;
-      margin-bottom: 20pt;
+      margin-bottom: 4pt;
+    }
+
+    td.firma-cell .firma-img {
+      max-height: 36pt;
+      max-width: 160pt;
+      display: inline-block;
+      vertical-align: bottom;
     }
 
     td.firma-cell .riga-firma {
@@ -166,9 +212,33 @@
     div.uoc-block p.bold {
       font-weight: bold;
     }
-  </style>
+
+    div.uoc-block .firma-direttore {
+      max-height: 40pt;
+      max-width: 160pt;
+      display: block;
+      margin: 4pt auto;
+    }
+</style>
 </head>
 <body>
+
+  <!-- Intestazione con logo e dati ente -->
+  <table class="intestazione">
+    <tr>
+      <td class="logo-cell">
+        <img src="data:image/jpeg;base64,{{ logo_b64 }}" alt="Logo ASL Napoli 3 Sud" />
+      </td>
+      <td class="ente-cell">
+        <p class="ente-nome">UOC Controllo di Gestione</p>
+        <p>Corso Alcide de Gasperi, 167 – 80053 Castellammare di Stabia (NA)</p>
+        <p>TEL. 0818729023/074/778/075/039</p>
+        <p>E-mail scog@aslnapoli3sud.it</p>
+        <p>Pec: scog@pec.aslnapoli3sud.it</p>
+        <p>Sito: www.aslnapoli3sud.it</p>
+      </td>
+    </tr>
+  </table>
 
   <h1 class="titolo">Richiesta di Congedo e/o Permesso</h1>
 
@@ -241,6 +311,7 @@
   <div class="uoc-block">
     <p class="bold">U.O.C. Controllo di Gestione</p>
     <p class="bold">Il Direttore f.f.</p>
+    <img src="data:image/png;base64,{{ firma_b64 }}" alt="Firma Direttore" class="firma-direttore" />
     <p>Dott.ssa A. De Stefano</p>
   </div>
 

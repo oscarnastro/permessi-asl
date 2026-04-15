@@ -1,3 +1,4 @@
+import base64
 import os
 from datetime import date, datetime
 
@@ -6,6 +7,15 @@ import weasyprint
 
 _PDF_CHECKED = "[X]"
 _PDF_UNCHECKED = "[ ]"
+
+_STATIC_DIR = os.path.join(os.path.dirname(__file__), "..", "static", "img")
+
+
+def _load_image_b64(filename: str) -> str:
+    """Read an image from static/img and return its base64-encoded content."""
+    path = os.path.join(_STATIC_DIR, filename)
+    with open(path, "rb") as f:
+        return base64.b64encode(f.read()).decode()
 
 
 def _fmt_date(d):
@@ -32,6 +42,8 @@ def generate_documents(tipo_permesso: str, data_dal, data_al, output_dir: str):
         "MATRICOLA": os.environ.get("MATRICOLA", "___"),
         "SERVIZIO": os.environ.get("SERVIZIO", "___"),
         "DATA_CREAZIONE": date.today().strftime("%d/%m/%Y"),
+        "logo_b64": _load_image_b64("logo_asl.jpeg"),
+        "firma_b64": _load_image_b64("firma_direttore.png"),
     }
 
     for t in types:
