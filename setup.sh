@@ -50,9 +50,13 @@ fi
 mkdir -p "$APP_DIR/output"
 echo "==> Cartella output: $APP_DIR/output"
 
-# 7. Genera template Word
-echo "==> Genero il template Word..."
-"$VENV_DIR/bin/python" "$APP_DIR/template/create_template.py"
+# 7. Verifica che il template Word sia presente
+if [ ! -f "$APP_DIR/template/permesso_template.docx" ]; then
+  echo "ATTENZIONE: template/permesso_template.docx non trovato."
+  echo "  Copia il tuo template nella cartella 'template/' prima di avviare l'app."
+  exit 1
+fi
+echo "==> Template Word trovato."
 
 # 8. Avvia il servizio con pm2
 if ! command -v pm2 &>/dev/null; then

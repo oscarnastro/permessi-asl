@@ -95,11 +95,8 @@ venv/bin/gunicorn --bind 0.0.0.0:3002 --workers 2 run:app
 
 ## Template Word
 
-Il file `template/permesso_template.docx` viene generato automaticamente da `setup.sh`.  
-Per usare il **tuo template ufficiale** (con logo, intestazione, firma):
-
-1. Sostituisci `template/permesso_template.docx` con il tuo file
-2. Assicurati che contenga i segnaposto Jinja2 elencati di seguito
+Il file `template/permesso_template.docx` è fornito direttamente dall'utente e rimane fisso nel repository.  
+Assicurati che contenga i segnaposto Jinja2 elencati di seguito.
 
 ### Segnaposto del template
 
