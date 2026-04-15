@@ -1,0 +1,25 @@
+# NOTA: Questo è un file template. I percorsi e l'utente vengono sostituiti
+# automaticamente da setup.sh in base alla directory di installazione.
+# NON modificare manualmente i percorsi hardcoded qui sotto se si usa setup.sh.
+[Unit]
+Description=Permessi ASL – Richiesta di Congedo e/o Permesso
+After=network.target
+
+[Service]
+Type=simple
+# Modifica con l'utente del tuo NAS (es. admin, user, ...)
+User=admin
+WorkingDirectory=/volume1/homes/admin/permessi-asl
+EnvironmentFile=/volume1/homes/admin/permessi-asl/.env
+ExecStart=/volume1/homes/admin/permessi-asl/venv/bin/gunicorn \
+    --bind 0.0.0.0:5000 \
+    --workers 2 \
+    --timeout 120 \
+    run:app
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
