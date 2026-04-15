@@ -24,6 +24,10 @@ def _calc_days(data_dal, data_al):
 
 
 def generate_documents(tipo_permesso: str, data_dal, data_al, output_dir: str):
+    # Resolve and validate output_dir to prevent path traversal
+    output_dir = os.path.realpath(output_dir)
+    os.makedirs(output_dir, exist_ok=True)
+
     types = ["congedo", "festivita", "104", "legge", "altro"]
     
     context = {

@@ -16,7 +16,26 @@ jobs:
           host: ${{ secrets.NAS_HOST }}
           username: ${{ secrets.NAS_USER }}
           key: ${{ secrets.NAS_SSH_KEY }}
+          # NAS_APP_PATH: percorso della cartella sul NAS, es. /volume1/homes/admin/permessi-asl
           script: |
-            cd ${{ secrets.NAS_APP_PATH || '~/permessi-asl' }}
+            set -e
+            cd "${{ secrets.NAS_APP_PATH }}"
+
+            # Aggiorna il codice
             git pull origin main
-            docker compose up --build -d
+
+            # Aggiorna le dipendenze Python nel virtualenv
+            venv/bin/pip install --quiet -r requirements.txt
+
+            # Rigenera il template Word se lo script è cambiato
+            venv/bin/python template/create_template.py
+
+            # Riavvia il servizio (systemd)
+            if command -v systemctl >/dev/null 2>&1; then
+              sudo systemctl restart permessi-asl
+            else
+              # Fallback: kill e riavvia gunicorn manualmente
+              pkill -f "gunicorn.*run:app" || true
+              nohup venv/bin/gunicorn --bind 0.0.0.0:5000 --workers 2 --timeout 120 run:app \
+                > logs/gunicorn.log 2>&1 &
+            fi

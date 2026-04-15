@@ -5,7 +5,9 @@ from email.utils import formataddr
 
 
 def send_mail(pdf_path: str):
-    smtp_host = os.environ.get("SMTP_HOST", "localhost")
+    smtp_host = os.environ.get("SMTP_HOST", "")
+    if not smtp_host:
+        raise ValueError("SMTP_HOST non configurato nel file .env")
     smtp_port = int(os.environ.get("SMTP_PORT", "587"))
     smtp_use_tls = os.environ.get("SMTP_USE_TLS", "true").lower() == "true"
     smtp_user = os.environ.get("SMTP_USER", "")

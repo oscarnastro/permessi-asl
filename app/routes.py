@@ -11,7 +11,9 @@ def index():
 
 @bp.route("/genera", methods=["POST"])
 def genera():
-    data = request.get_json(force=True)
+    data = request.get_json()
+    if data is None:
+        return jsonify({"ok": False, "errors": {"general": "Richiesta non valida (Content-Type deve essere application/json)."}}), 400
     tipo = data.get("tipo_permesso", "").strip()
     data_dal_str = data.get("data_dal", "").strip()
     data_al_str = data.get("data_al", "").strip()
