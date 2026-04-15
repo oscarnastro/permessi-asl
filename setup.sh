@@ -18,13 +18,13 @@ if ! command -v python3 &>/dev/null; then
 fi
 echo "==> Python: $(python3 --version)"
 
-# 2. Verifica LibreOffice (necessario per la conversione PDF)
-if ! command -v soffice &>/dev/null; then
-  echo "ATTENZIONE: LibreOffice (soffice) non trovato."
-  echo "  La conversione PDF non funzionerà finché non viene installato."
-  echo "  Su Synology: installa il pacchetto 'LibreOffice' dal Package Center."
+# 2. Verifica LibreOffice (opzionale – solo per la conversione PDF)
+if ! command -v soffice &>/dev/null && ! command -v libreoffice &>/dev/null; then
+  echo "INFO: LibreOffice (soffice) non trovato."
+  echo "  La conversione PDF non è disponibile: l'allegato email sarà in formato DOCX."
+  echo "  Per abilitare il PDF installa LibreOffice (opzionale)."
 else
-  echo "==> LibreOffice: $(soffice --version 2>/dev/null | head -1)"
+  echo "==> LibreOffice: $(soffice --version 2>/dev/null || libreoffice --version 2>/dev/null | head -1)"
 fi
 
 # 3. Crea virtualenv

@@ -3,8 +3,16 @@ import smtplib
 from email.message import EmailMessage
 from email.utils import formataddr
 
+_MIME_TYPES = {
+    ".pdf": ("application", "pdf"),
+    ".docx": (
+        "application",
+        "vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ),
+}
 
-def send_mail(pdf_path: str):
+
+def send_mail(attachment_path: str):
     smtp_host = os.environ.get("SMTP_HOST", "")
     if not smtp_host:
         raise ValueError("SMTP_HOST non configurato nel file .env")
@@ -38,11 +46,13 @@ def send_mail(pdf_path: str):
     msg["To"] = ", ".join(email_to)
     msg.set_content(body)
 
-    with open(pdf_path, "rb") as f:
-        pdf_data = f.read()
+    with open(attachment_path, "rb") as f:
+        file_data = f.read()
 
-    pdf_filename = os.path.basename(pdf_path)
-    msg.add_attachment(pdf_data, maintype="application", subtype="pdf", filename=pdf_filename)
+    ext = os.path.splitext(attachment_path)[1].lower()
+    maintype, subtype = _MIME_TYPES.get(ext, ("application", "octet-stream"))
+    filename = os.path.basename(attachment_path)
+    msg.add_attachment(file_data, maintype=maintype, subtype=subtype, filename=filename)
 
     if smtp_use_tls:
         with smtplib.SMTP(smtp_host, smtp_port) as server:

@@ -9,7 +9,7 @@ Applicativo web per generare richieste di congedo/permesso in formato **Word** e
 | Requisito | Note |
 |-----------|------|
 | **Python 3.9+** | Su Synology: installa da *Package Center → Python 3* |
-| **LibreOffice** | Per la conversione in PDF. Su Synology: *Package Center → LibreOffice* |
+| **LibreOffice** *(opzionale)* | Per la conversione in PDF. Su Synology: *Package Center → LibreOffice*. Se non disponibile, l'allegato email sarà in formato **DOCX**. |
 | **Git** | Su Synology: *Package Center → Git Server* oppure tramite `opkg` |
 | **Node.js + npm** | Per pm2. Su Synology: *Package Center → Node.js* |
 | **pm2** | Process manager: `npm install -g pm2` |

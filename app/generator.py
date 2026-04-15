@@ -60,9 +60,13 @@ def generate_documents(tipo_permesso: str, data_dal, data_al, output_dir: str):
     docx_path = os.path.join(output_dir, filename_base + ".docx")
     tpl.save(docx_path)
 
+    soffice = _find_soffice()
+    if soffice is None:
+        return docx_path, None
+
     result = subprocess.run(
         [
-            "soffice",
+            soffice,
             "--headless",
             "--convert-to",
             "pdf",
@@ -75,10 +79,21 @@ def generate_documents(tipo_permesso: str, data_dal, data_al, output_dir: str):
         timeout=60,
     )
     if result.returncode != 0:
-        raise RuntimeError(f"LibreOffice conversion failed: {result.stderr}")
+        return docx_path, None
 
     pdf_path = os.path.join(output_dir, filename_base + ".pdf")
     if not os.path.exists(pdf_path):
-        raise RuntimeError(f"PDF not found after conversion: {pdf_path}")
+        return docx_path, None
 
     return docx_path, pdf_path
+
+
+def _find_soffice():
+    """Return the path to soffice/libreoffice, or None if not available."""
+    import shutil
+
+    for cmd in ("soffice", "libreoffice"):
+        path = shutil.which(cmd)
+        if path:
+            return path
+    return None
