@@ -1,6 +1,9 @@
 import os
 from datetime import date, datetime
 
+import jinja2
+import weasyprint
+
 _PDF_CHECKED = "[X]"
 _PDF_UNCHECKED = "[ ]"
 
@@ -53,9 +56,6 @@ def generate_documents(tipo_permesso: str, data_dal, data_al, output_dir: str):
 
 def _generate_pdf_from_html(context: dict, pdf_path: str) -> None:
     """Generate a PDF by rendering the Jinja2 HTML template and converting with WeasyPrint."""
-    import jinja2
-    import weasyprint
-
     templates_dir = os.path.join(os.path.dirname(__file__), "..", "templates")
     env = jinja2.Environment(
         loader=jinja2.FileSystemLoader(os.path.abspath(templates_dir)),
