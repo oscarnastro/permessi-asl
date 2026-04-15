@@ -41,12 +41,10 @@ for _candidate in "${_SOFFICE_CANDIDATES[@]}"; do
 done
 
 if [ -z "$_SOFFICE_FOUND" ]; then
-  echo "ATTENZIONE: LibreOffice non trovato."
-  echo "  La conversione PDF non funzionerà finché non viene configurato."
-  echo "  Opzioni:"
-  echo "    1) Installa LibreOffice dal Package Center di Synology."
-  echo "    2) Aggiungi SOFFICE_PATH=/percorso/completo/soffice nel file .env"
-  echo "       (es. SOFFICE_PATH=/var/packages/LibreOffice/target/usr/bin/soffice)"
+  echo "INFO: LibreOffice non trovato – il PDF sarà generato in Python (fpdf2)."
+  echo "  Per massima fedeltà al template Word installa LibreOffice (opzionale)."
+  echo "  Se è installato in un percorso non standard, aggiungi nel .env:"
+  echo "    SOFFICE_PATH=/percorso/completo/soffice"
 else
   echo "==> LibreOffice: $("$_SOFFICE_FOUND" --version 2>/dev/null | head -1) [$_SOFFICE_FOUND]"
 fi
