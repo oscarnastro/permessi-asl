@@ -5,18 +5,22 @@
 # ============================================================
 set -euo pipefail
 
-APP_DIR="$(cd "$(dirname "$0")" && pwd)"
+APP_DIR="$(cd ""$(dirname "$0")" && pwd)"
 VENV_DIR="$APP_DIR/venv"
 SERVICE_NAME="permessi-asl"
 
 echo "==> Directory applicazione: $APP_DIR"
 
-# 1. Verifica Python 3
-if ! command -v python3 &>/dev/null; then
+# 1. Verifica Python 3 – preferisce python3.14 se disponibile
+if command -v python3.14 &>/dev/null; then
+  PYTHON_BIN="python3.14"
+elif command -v python3 &>/dev/null; then
+  PYTHON_BIN="python3"
+else
   echo "ERRORE: python3 non trovato. Installa Python 3.9+ sul NAS."
   exit 1
 fi
-echo "==> Python: $(python3 --version)"
+echo "==> Python: $($PYTHON_BIN --version)"
 
 # 2. Verifica LibreOffice (necessario per la conversione PDF)
 _SOFFICE_PATH="${SOFFICE_PATH:-}"
@@ -52,7 +56,7 @@ fi
 # 3. Crea virtualenv
 if [ ! -d "$VENV_DIR" ]; then
   echo "==> Creo virtualenv..."
-  python3 -m venv "$VENV_DIR"
+  $PYTHON_BIN -m venv "$VENV_DIR"
 fi
 
 # 4. Installa dipendenze
@@ -96,6 +100,5 @@ else
   echo "      pm2 startup"
   echo "    e segui le istruzioni mostrate."
 fi
-
 echo ""
 echo "✅ Setup completato. L'app sarà raggiungibile su http://<IP-NAS>:3002"
