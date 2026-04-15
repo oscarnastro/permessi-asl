@@ -98,12 +98,12 @@ def main():
         ),
         (
             "{{ sel_altro }}",
-            "  Altro",
-            "",
-            "",
-            "",
-            "",
-            "",
+            "  Altro n° ",
+            "{{ giorni_altro }}",
+            " giorni a decorrere dal ",
+            "{{ data_dal_altro }}",
+            " fino a tutto il ",
+            "{{ data_al_altro }}",
         ),
     ]
 

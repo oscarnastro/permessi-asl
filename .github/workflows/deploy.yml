@@ -30,12 +30,6 @@ jobs:
             # Rigenera il template Word se lo script è cambiato
             venv/bin/python template/create_template.py
 
-            # Riavvia il servizio (systemd)
-            if command -v systemctl >/dev/null 2>&1; then
-              sudo systemctl restart permessi-asl
-            else
-              # Fallback: kill e riavvia gunicorn manualmente
-              pkill -f "gunicorn.*run:app" || true
-              nohup venv/bin/gunicorn --bind 0.0.0.0:5000 --workers 2 --timeout 120 run:app \
-                > logs/gunicorn.log 2>&1 &
-            fi
+            # Riavvia il servizio con pm2
+            pm2 restart permessi-asl || pm2 start "${{ secrets.NAS_APP_PATH }}/ecosystem.config.js"
+            pm2 save

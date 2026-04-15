@@ -29,25 +29,24 @@ def genera():
     data_dal = None
     data_al = None
 
-    if tipo != "altro":
-        if not data_dal_str:
-            errors["data_dal"] = "La data di inizio è obbligatoria."
-        else:
-            try:
-                data_dal = datetime.strptime(data_dal_str, "%Y-%m-%d").date()
-            except ValueError:
-                errors["data_dal"] = "Formato data non valido."
+    if not data_dal_str:
+        errors["data_dal"] = "La data di inizio è obbligatoria."
+    else:
+        try:
+            data_dal = datetime.strptime(data_dal_str, "%Y-%m-%d").date()
+        except ValueError:
+            errors["data_dal"] = "Formato data non valido."
 
-        if not data_al_str:
-            errors["data_al"] = "La data di fine è obbligatoria."
-        else:
-            try:
-                data_al = datetime.strptime(data_al_str, "%Y-%m-%d").date()
-            except ValueError:
-                errors["data_al"] = "Formato data non valido."
+    if not data_al_str:
+        errors["data_al"] = "La data di fine è obbligatoria."
+    else:
+        try:
+            data_al = datetime.strptime(data_al_str, "%Y-%m-%d").date()
+        except ValueError:
+            errors["data_al"] = "Formato data non valido."
 
-        if data_dal and data_al and data_al < data_dal:
-            errors["data_al"] = "La data di fine deve essere uguale o successiva alla data di inizio."
+    if data_dal and data_al and data_al < data_dal:
+        errors["data_al"] = "La data di fine deve essere uguale o successiva alla data di inizio."
 
     if errors:
         return jsonify({"ok": False, "errors": errors}), 400

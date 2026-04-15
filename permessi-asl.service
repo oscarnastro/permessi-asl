@@ -12,7 +12,7 @@ User=admin
 WorkingDirectory=/volume1/homes/admin/permessi-asl
 EnvironmentFile=/volume1/homes/admin/permessi-asl/.env
 ExecStart=/volume1/homes/admin/permessi-asl/venv/bin/gunicorn \
-    --bind 0.0.0.0:5000 \
+    --bind 0.0.0.0:3002 \
     --workers 2 \
     --timeout 120 \
     run:app
