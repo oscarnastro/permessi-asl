@@ -3,7 +3,6 @@ __pycache__/
 *.pyc
 output/*.docx
 output/*.pdf
-template/permesso_template.docx
 *.egg-info/
 .DS_Store
 venv/

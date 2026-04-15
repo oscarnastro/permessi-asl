@@ -11,8 +11,8 @@ Applicativo web per generare richieste di congedo/permesso in formato **Word** e
 | **Python 3.9+** | Su Synology: installa da *Package Center → Python 3* |
 | **LibreOffice** | Per la conversione in PDF. Su Synology: *Package Center → LibreOffice* |
 | **Git** | Su Synology: *Package Center → Git Server* oppure tramite `opkg` |
-| **SSH abilitato** | Per il deploy automatico via GitHub Actions |
-
+| **Node.js + npm** | Per pm2. Su Synology: *Package Center → Node.js* |
+| **pm2** | Process manager: `npm install -g pm2` |
 ---
 
 ## Primo avvio (installazione)
@@ -22,7 +22,7 @@ Applicativo web per generare richieste di congedo/permesso in formato **Word** e
 git clone https://github.com/oscarnastro/permessi-asl.git
 cd permessi-asl
 
-# 2. Esegui lo script di setup (crea virtualenv, installa dipendenze, genera template)
+# 2. Esegui lo script di setup (crea virtualenv, installa dipendenze, genera template, avvia con pm2)
 bash setup.sh
 
 # 3. Modifica il file .env con i tuoi dati
@@ -55,77 +55,79 @@ OUTPUT_DIR=./output
 
 ---
 
-## Avvio manuale
+## Avvio con pm2
 
 ```bash
 cd permessi-asl
-venv/bin/gunicorn --bind 0.0.0.0:5000 --workers 2 run:app
+
+# Avvia (o riavvia) tramite il file ecosystem
+pm2 start ecosystem.config.js
+
+# Salva la lista dei processi (sopravvive al reboot)
+pm2 save
+
+# Abilita pm2 all'avvio automatico del sistema (segui le istruzioni mostrate)
+pm2 startup
 ```
 
-L'app sarà raggiungibile su `http://<IP-NAS>:5000`.
+L'app sarà raggiungibile su `http://<IP-NAS>:3002`.
 
----
-
-## Servizio systemd (avvio automatico)
-
-Lo script `setup.sh` genera e installa automaticamente il file di servizio.  
-Se preferisci installarlo manualmente:
+### Comandi utili pm2
 
 ```bash
-# Modifica il file service con i tuoi percorsi
-nano permessi-asl.service
-
-# Installa (richiede root / sudo)
-sudo cp permessi-asl.service /etc/systemd/system/
-sudo systemctl daemon-reload
-sudo systemctl enable permessi-asl
-sudo systemctl start permessi-asl
-
-# Verifica stato
-sudo systemctl status permessi-asl
+pm2 status                  # stato dei processi
+pm2 logs permessi-asl       # log in tempo reale
+pm2 restart permessi-asl    # riavvio
+pm2 stop permessi-asl       # stop
+pm2 delete permessi-asl     # rimozione dal registro pm2
 ```
 
 ---
 
-## Continuous Integration / Deploy automatico
+## Avvio manuale (senza pm2)
 
-Ad ogni push sul branch `main`, GitHub Actions esegue via SSH:
-1. `git pull origin main`
-2. `pip install -r requirements.txt`
-3. Rigenerazione del template Word
-4. `systemctl restart permessi-asl`
-
-### Segreti da configurare in GitHub
-*Settings → Secrets → Actions:*
-
-| Segreto | Esempio |
-|---------|---------|
-| `NAS_HOST` | `192.168.1.100` |
-| `NAS_USER` | `admin` |
-| `NAS_SSH_KEY` | chiave privata SSH (es. contenuto di `~/.ssh/id_ed25519`) |
-| `NAS_APP_PATH` | `/volume1/homes/admin/permessi-asl` |
-
-#### Generare la coppia di chiavi SSH (se non ce l'hai già)
 ```bash
-ssh-keygen -t ed25519 -C "github-deploy" -f ~/.ssh/nas_deploy
-# Copia la chiave pubblica sul NAS
-ssh-copy-id -i ~/.ssh/nas_deploy.pub admin@<IP-NAS>
-# Il contenuto di ~/.ssh/nas_deploy va nel segreto NAS_SSH_KEY
+cd permessi-asl
+venv/bin/gunicorn --bind 0.0.0.0:3002 --workers 2 run:app
 ```
 
 ---
 
 ## Template Word
 
-Il file `template/permesso_template.docx` viene generato automaticamente da `setup.sh`.  
-Per usare il **tuo template ufficiale** (con logo, intestazione, firma):
+Il file `template/permesso_template.docx` è fornito direttamente dall'utente e rimane fisso nel repository.  
+Assicurati che contenga i segnaposto Jinja2 elencati di seguito.
 
-1. Sostituisci `template/permesso_template.docx` con il tuo file
-2. Assicurati che contenga i segnaposto Jinja2:
-   `{{ NOME_COGNOME }}`, `{{ MATRICOLA }}`, `{{ SERVIZIO }}`, `{{ DATA_CREAZIONE }}`,  
-   `{{ sel_congedo }}`, `{{ giorni_congedo }}`, `{{ data_dal_congedo }}`, `{{ data_al_congedo }}`,  
-   `{{ sel_festivita }}`, `{{ giorni_festivita }}`, `{{ data_dal_festivita }}`, `{{ data_al_festivita }}`,  
-   `{{ sel_104 }}`, `{{ giorni_104 }}`, `{{ data_104 }}`,  
-   `{{ sel_legge }}`, `{{ giorni_legge }}`, `{{ data_dal_legge }}`, `{{ data_al_legge }}`,  
-   `{{ sel_altro }}`
+### Segnaposto del template
+
+| Segnaposto | Descrizione |
+|------------|-------------|
+| `{{ NOME_COGNOME }}` | Nome e cognome del dipendente (da `.env`) |
+| `{{ MATRICOLA }}` | Matricola (da `.env`) |
+| `{{ SERVIZIO }}` | Unità organizzativa (da `.env`) |
+| `{{ DATA_CREAZIONE }}` | Data di generazione del documento (gg/mm/aaaa) |
+| `{{ sel_congedo }}` | Segno di spunta (☒ se selezionato, ○ altrimenti) |
+| `{{ giorni_congedo }}` | Numero di giorni calcolato automaticamente |
+| `{{ data_dal_congedo }}` | Data inizio (gg/mm/aaaa) |
+| `{{ data_al_congedo }}` | Data fine (gg/mm/aaaa) |
+| `{{ sel_festivita }}` | Segno di spunta |
+| `{{ giorni_festivita }}` | Numero di giorni |
+| `{{ data_dal_festivita }}` | Data inizio |
+| `{{ data_al_festivita }}` | Data fine |
+| `{{ sel_104 }}` | Segno di spunta |
+| `{{ giorni_104 }}` | Numero di giorni |
+| `{{ data_104 }}` | Data del giorno |
+| `{{ sel_legge }}` | Segno di spunta |
+| `{{ giorni_legge }}` | Numero di giorni |
+| `{{ data_dal_legge }}` | Data inizio |
+| `{{ data_al_legge }}` | Data fine |
+| `{{ sel_altro }}` | Segno di spunta |
+| `{{ giorni_altro }}` | Numero di giorni |
+| `{{ data_dal_altro }}` | Data inizio |
+| `{{ data_al_altro }}` | Data fine |
+
+> **Come funzionano i segnaposto `sel_`**  
+> Quando l'utente seleziona un tipo di permesso (es. *Congedo ordinario*), il corrispondente `{{ sel_congedo }}` viene sostituito con il carattere **☒** (X nel quadrato).  
+> Tutti gli altri `sel_` vengono sostituiti con **○** (casella vuota).  
+> In questo modo il documento Word/PDF risultante mostra esattamente la casella barrata come nel modulo originale.
 

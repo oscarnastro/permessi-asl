@@ -47,9 +47,9 @@ def generate_documents(tipo_permesso: str, data_dal, data_al, output_dir: str):
                 context["data_dal_104"] = _fmt_date(data_dal)
                 context["data_al_104"] = _fmt_date(data_al)
             elif t == "altro":
-                context["giorni_altro"] = "___"
-                context["data_dal_altro"] = "___"
-                context["data_al_altro"] = "___"
+                context["giorni_altro"] = str(_calc_days(data_dal, data_al))
+                context["data_dal_altro"] = _fmt_date(data_dal)
+                context["data_al_altro"] = _fmt_date(data_al)
             else:
                 context[f"giorni_{key}"] = str(_calc_days(data_dal, data_al))
                 context[f"data_dal_{key}"] = _fmt_date(data_dal)

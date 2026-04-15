@@ -125,10 +125,6 @@
         <div class="mb-8">
           <h2 class="text-lg font-semibold text-gray-800 mb-4">Periodo richiesto</h2>
 
-          <div id="date-note" class="hidden mb-3 text-sm text-indigo-600 bg-indigo-50 rounded-lg p-3">
-            ℹ️ Per il tipo "Altro" le date sono facoltative.
-          </div>
-
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <!-- Dal -->
             <div>
@@ -208,9 +204,6 @@
     const alertBox = document.getElementById('alert-box');
     const alertInner = document.getElementById('alert-inner');
     const liveRegion = document.getElementById('live-region');
-    const dateNote = document.getElementById('date-note');
-    const dalRequired = document.getElementById('dal-required-indicator');
-    const alRequired = document.getElementById('al-required-indicator');
 
     function getSelectedTipo() {
       const checked = document.querySelector('input[name="tipo_permesso"]:checked');
@@ -223,17 +216,6 @@
         const dot = card.querySelector('.check-dot');
         if (dot) dot.classList.toggle('hidden', !input.checked);
       });
-    }
-
-    function updateDatesUI() {
-      const tipo = getSelectedTipo();
-      const isAltro = tipo === 'altro';
-      dateNote.classList.toggle('hidden', !isAltro);
-      dalRequired.classList.toggle('hidden', isAltro);
-      alRequired.classList.toggle('hidden', isAltro);
-      dataDal.setAttribute('aria-required', isAltro ? 'false' : 'true');
-      dataAl.setAttribute('aria-required', isAltro ? 'false' : 'true');
-      calcGiorni();
     }
 
     function calcGiorni() {
@@ -291,7 +273,6 @@
     function clientValidate() {
       clearAllErrors();
       const tipo = getSelectedTipo();
-      const isAltro = tipo === 'altro';
       let valid = true;
 
       if (!tipo) {
@@ -299,19 +280,17 @@
         valid = false;
       }
 
-      if (!isAltro) {
-        if (!dataDal.value) {
-          showFieldError('dal', 'La data di inizio è obbligatoria.');
-          valid = false;
-        }
-        if (!dataAl.value) {
-          showFieldError('al', 'La data di fine è obbligatoria.');
-          valid = false;
-        }
-        if (dataDal.value && dataAl.value && dataAl.value < dataDal.value) {
-          showFieldError('al', 'La data di fine deve essere uguale o successiva alla data di inizio.');
-          valid = false;
-        }
+      if (!dataDal.value) {
+        showFieldError('dal', 'La data di inizio è obbligatoria.');
+        valid = false;
+      }
+      if (!dataAl.value) {
+        showFieldError('al', 'La data di fine è obbligatoria.');
+        valid = false;
+      }
+      if (dataDal.value && dataAl.value && dataAl.value < dataDal.value) {
+        showFieldError('al', 'La data di fine deve essere uguale o successiva alla data di inizio.');
+        valid = false;
       }
 
       return valid;
@@ -320,7 +299,7 @@
     document.querySelectorAll('input[name="tipo_permesso"]').forEach(radio => {
       radio.addEventListener('change', () => {
         updateCheckDots();
-        updateDatesUI();
+        calcGiorni();
         clearFieldError('tipo');
       });
     });

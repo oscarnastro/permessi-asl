@@ -8,7 +8,6 @@ set -euo pipefail
 APP_DIR="$(cd "$(dirname "$0")" && pwd)"
 VENV_DIR="$APP_DIR/venv"
 SERVICE_NAME="permessi-asl"
-SERVICE_SRC="$APP_DIR/permessi-asl.service"
 
 echo "==> Directory applicazione: $APP_DIR"
 
@@ -51,47 +50,30 @@ fi
 mkdir -p "$APP_DIR/output"
 echo "==> Cartella output: $APP_DIR/output"
 
-# 7. Genera template Word
-echo "==> Genero il template Word..."
-"$VENV_DIR/bin/python" "$APP_DIR/template/create_template.py"
+# 7. Verifica che il template Word sia presente
+if [ ! -f "$APP_DIR/template/permesso_template.docx" ]; then
+  echo "ATTENZIONE: template/permesso_template.docx non trovato."
+  echo "  Copia il tuo template nella cartella 'template/' prima di avviare l'app."
+  exit 1
+fi
+echo "==> Template Word trovato."
 
-# 8. Installa e abilita il servizio systemd (richiede sudo/root)
-if command -v systemctl &>/dev/null; then
-  # Usa Python per sostituire i percorsi in modo sicuro (evita injection via sed)
-  python3 - "$APP_DIR" "$(id -un)" "$SERVICE_SRC" <<'PYEOF'
-import sys
-app_dir, user, src = sys.argv[1], sys.argv[2], sys.argv[3]
-with open(src, 'r') as f:
-    content = f.read()
-content = content.replace('/volume1/homes/admin/permessi-asl', app_dir)
-content = content.replace('User=admin', f'User={user}')
-with open('/tmp/permessi-asl.service', 'w') as f:
-    f.write(content)
-PYEOF
-
-  if [ "$(id -u)" -eq 0 ]; then
-    cp /tmp/permessi-asl.service /etc/systemd/system/"$SERVICE_NAME".service
-    systemctl daemon-reload
-    systemctl enable "$SERVICE_NAME"
-    systemctl restart "$SERVICE_NAME"
-    echo "==> Servizio systemd '$SERVICE_NAME' avviato e abilitato all'avvio."
-  else
-    echo ""
-    echo "Per installare il servizio systemd, esegui questi comandi come root:"
-    echo "  sudo cp /tmp/permessi-asl.service /etc/systemd/system/$SERVICE_NAME.service"
-    echo "  sudo systemctl daemon-reload"
-    echo "  sudo systemctl enable $SERVICE_NAME"
-    echo "  sudo systemctl restart $SERVICE_NAME"
-    echo ""
-    echo "Oppure avvia manualmente (senza systemd):"
-    echo "  $VENV_DIR/bin/gunicorn --bind 0.0.0.0:5000 --workers 2 run:app &"
-  fi
+# 8. Avvia il servizio con pm2
+if ! command -v pm2 &>/dev/null; then
+  echo "ATTENZIONE: pm2 non trovato."
+  echo "  Installalo con: npm install -g pm2"
+  echo "  Poi avvia manualmente con: pm2 start ecosystem.config.js"
 else
-  echo ""
-  echo "systemctl non disponibile. Avvio manuale:"
-  echo "  cd $APP_DIR"
-  echo "  $VENV_DIR/bin/gunicorn --bind 0.0.0.0:5000 --workers 2 run:app &"
+  echo "==> pm2: $(pm2 --version)"
+  # Ferma l'eventuale istanza precedente (ignora errore se non esiste)
+  pm2 delete "$SERVICE_NAME" 2>/dev/null || true
+  pm2 start "$APP_DIR/ecosystem.config.js"
+  pm2 save
+  echo "==> Servizio '$SERVICE_NAME' avviato con pm2."
+  echo "    Per avviarlo automaticamente al boot esegui:"
+  echo "      pm2 startup"
+  echo "    e segui le istruzioni mostrate."
 fi
 
 echo ""
-echo "✅ Setup completato. L'app sarà raggiungibile su http://<IP-NAS>:5000"
+echo "✅ Setup completato. L'app sarà raggiungibile su http://<IP-NAS>:3002"
