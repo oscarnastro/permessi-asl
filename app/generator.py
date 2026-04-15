@@ -4,14 +4,6 @@ from datetime import date, datetime
 _PDF_CHECKED = "[X]"
 _PDF_UNCHECKED = "[ ]"
 
-_TYPE_LABELS = {
-    "congedo": "Congedo ordinario",
-    "festivita": "Festivita' soppresse",
-    "104": "Permessi L. 104/92",
-    "legge": "Altre leggi/CCNL",
-    "altro": "Altro",
-}
-
 
 def _fmt_date(d):
     if d is None:
@@ -55,85 +47,21 @@ def generate_documents(tipo_permesso: str, data_dal, data_al, output_dir: str):
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     pdf_path = os.path.join(output_dir, f"permesso_{cognome}_{timestamp}.pdf")
 
-    _generate_pdf_native(context, types, tipo_permesso, pdf_path)
+    _generate_pdf_from_html(context, pdf_path)
     return pdf_path
 
 
-def _generate_pdf_native(context: dict, types: list, tipo_permesso: str, pdf_path: str) -> None:
-    """Generate a PDF using fpdf2 (pure Python, no external dependencies)."""
-    from fpdf import FPDF
+def _generate_pdf_from_html(context: dict, pdf_path: str) -> None:
+    """Generate a PDF by rendering the Jinja2 HTML template and converting with WeasyPrint."""
+    import jinja2
+    import weasyprint
 
-    pdf = FPDF()
-    pdf.set_margins(20, 20, 20)
-    pdf.add_page()
+    templates_dir = os.path.join(os.path.dirname(__file__), "..", "templates")
+    env = jinja2.Environment(
+        loader=jinja2.FileSystemLoader(os.path.abspath(templates_dir)),
+        autoescape=jinja2.select_autoescape(["html"]),
+    )
+    template = env.get_template("permesso_pdf.html")
+    html_content = template.render(**context)
 
-    # ── Title ──────────────────────────────────────────────────────────────
-    pdf.set_font("Helvetica", "B", 14)
-    pdf.cell(0, 10, "RICHIESTA DI CONGEDO / PERMESSO", align="C", new_x="LMARGIN", new_y="NEXT")
-    pdf.ln(2)
-
-    # ── Header fields ──────────────────────────────────────────────────────
-    pdf.set_font("Helvetica", "", 10)
-    usable_w = pdf.w - pdf.l_margin - pdf.r_margin  # ~170 mm
-
-    label_w = 30
-    value_w = usable_w / 2 - label_w - 4
-
-    def header_row(label1, val1, label2, val2):
-        pdf.set_font("Helvetica", "B", 10)
-        pdf.cell(label_w, 7, label1 + ":", border=0)
-        pdf.set_font("Helvetica", "", 10)
-        pdf.cell(value_w, 7, val1, border="B")
-        pdf.cell(4, 7, "", border=0)
-        pdf.set_font("Helvetica", "B", 10)
-        pdf.cell(label_w, 7, label2 + ":", border=0)
-        pdf.set_font("Helvetica", "", 10)
-        pdf.cell(0, 7, val2, border="B", new_x="LMARGIN", new_y="NEXT")
-
-    header_row("Dipendente", context["NOME_COGNOME"], "Matricola", context["MATRICOLA"])
-    header_row("Servizio/UO", context["SERVIZIO"], "Data", context["DATA_CREAZIONE"])
-    pdf.ln(6)
-
-    # ── Table header ───────────────────────────────────────────────────────
-    col_tipo = 65
-    col_sel = 18
-    col_giorni = 20
-    col_dal = 35
-    col_al = 35
-
-    pdf.set_fill_color(220, 220, 220)
-    pdf.set_font("Helvetica", "B", 9)
-    pdf.cell(col_tipo, 7, "Tipo di permesso/congedo", border=1, align="C", fill=True)
-    pdf.cell(col_sel, 7, "Richiesto", border=1, align="C", fill=True)
-    pdf.cell(col_giorni, 7, "Giorni", border=1, align="C", fill=True)
-    pdf.cell(col_dal, 7, "Dal", border=1, align="C", fill=True)
-    pdf.cell(col_al, 7, "Al", border=1, align="C", fill=True, new_x="LMARGIN", new_y="NEXT")
-
-    # ── Table rows ─────────────────────────────────────────────────────────
-    pdf.set_font("Helvetica", "", 9)
-    for t in types:
-        is_sel = t == tipo_permesso
-        sel_symbol = _PDF_CHECKED if is_sel else _PDF_UNCHECKED
-        fill = is_sel
-        pdf.set_fill_color(235, 245, 255)
-
-        pdf.set_font("Helvetica", "B" if is_sel else "", 9)
-        pdf.cell(col_tipo, 7, _TYPE_LABELS.get(t, t), border=1, fill=fill)
-        pdf.set_font("Helvetica", "", 9)
-        pdf.cell(col_sel, 7, sel_symbol, border=1, align="C", fill=fill)
-        pdf.cell(col_giorni, 7, context.get(f"giorni_{t}", "___"), border=1, align="C", fill=fill)
-        pdf.cell(col_dal, 7, context.get(f"data_dal_{t}", "___"), border=1, align="C", fill=fill)
-        pdf.cell(col_al, 7, context.get(f"data_al_{t}", "___"), border=1, align="C", fill=fill,
-                 new_x="LMARGIN", new_y="NEXT")
-
-    pdf.ln(12)
-
-    # ── Signature area ─────────────────────────────────────────────────────
-    sig_w = 70
-    pdf.set_font("Helvetica", "", 9)
-    pdf.set_x(pdf.w - pdf.r_margin - sig_w)
-    pdf.cell(sig_w, 5, "Firma del dipendente", align="C", new_x="LMARGIN", new_y="NEXT")
-    pdf.set_x(pdf.w - pdf.r_margin - sig_w)
-    pdf.cell(sig_w, 10, "", border="B", new_x="LMARGIN", new_y="NEXT")
-
-    pdf.output(pdf_path)
+    weasyprint.HTML(string=html_content).write_pdf(pdf_path)
