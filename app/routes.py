@@ -58,10 +58,8 @@ def genera():
             data_al=data_al,
             output_dir=current_app.config["OUTPUT_DIR"],
         )
-        attachment_path = pdf_path if pdf_path is not None else docx_path
-        send_mail(attachment_path)
-        fmt = "PDF" if pdf_path is not None else "Word (DOCX)"
-        return jsonify({"ok": True, "message": f"Permesso generato e inviato con successo ({fmt})."})
+        send_mail(pdf_path)
+        return jsonify({"ok": True, "message": "Permesso generato e inviato con successo."})
     except Exception as exc:
         current_app.logger.exception("Errore nella generazione o invio del permesso")
         return jsonify({"ok": False, "errors": {"general": "Errore interno del server. Contatta l'amministratore."}}), 500

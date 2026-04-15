@@ -18,13 +18,37 @@ if ! command -v python3 &>/dev/null; then
 fi
 echo "==> Python: $(python3 --version)"
 
-# 2. Verifica LibreOffice (opzionale – solo per la conversione PDF)
-if ! command -v soffice &>/dev/null && ! command -v libreoffice &>/dev/null; then
-  echo "INFO: LibreOffice (soffice) non trovato."
-  echo "  La conversione PDF non è disponibile: l'allegato email sarà in formato DOCX."
-  echo "  Per abilitare il PDF installa LibreOffice (opzionale)."
+# 2. Verifica LibreOffice (necessario per la conversione PDF)
+_SOFFICE_PATH="${SOFFICE_PATH:-}"
+_SOFFICE_CANDIDATES=(
+  "$_SOFFICE_PATH"
+  "$(command -v soffice 2>/dev/null || true)"
+  "$(command -v libreoffice 2>/dev/null || true)"
+  "/var/packages/LibreOffice/target/usr/bin/soffice"
+  "/var/packages/LibreOffice/target/usr/bin/libreoffice"
+  "/opt/bin/soffice"
+  "/opt/bin/libreoffice"
+  "/opt/lib/libreoffice/program/soffice"
+  "/usr/lib/libreoffice/program/soffice"
+  "/usr/local/lib/libreoffice/program/soffice"
+)
+_SOFFICE_FOUND=""
+for _candidate in "${_SOFFICE_CANDIDATES[@]}"; do
+  if [ -n "$_candidate" ] && [ -x "$_candidate" ]; then
+    _SOFFICE_FOUND="$_candidate"
+    break
+  fi
+done
+
+if [ -z "$_SOFFICE_FOUND" ]; then
+  echo "ATTENZIONE: LibreOffice non trovato."
+  echo "  La conversione PDF non funzionerà finché non viene configurato."
+  echo "  Opzioni:"
+  echo "    1) Installa LibreOffice dal Package Center di Synology."
+  echo "    2) Aggiungi SOFFICE_PATH=/percorso/completo/soffice nel file .env"
+  echo "       (es. SOFFICE_PATH=/var/packages/LibreOffice/target/usr/bin/soffice)"
 else
-  echo "==> LibreOffice: $(soffice --version 2>/dev/null || libreoffice --version 2>/dev/null | head -1)"
+  echo "==> LibreOffice: $("$_SOFFICE_FOUND" --version 2>/dev/null | head -1) [$_SOFFICE_FOUND]"
 fi
 
 # 3. Crea virtualenv

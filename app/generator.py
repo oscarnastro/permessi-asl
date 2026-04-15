@@ -62,7 +62,11 @@ def generate_documents(tipo_permesso: str, data_dal, data_al, output_dir: str):
 
     soffice = _find_soffice()
     if soffice is None:
-        return docx_path, None
+        raise RuntimeError(
+            "LibreOffice non trovato. Installa LibreOffice e, se necessario, "
+            "configura la variabile SOFFICE_PATH nel file .env con il percorso "
+            "completo dell'eseguibile (es. /var/packages/LibreOffice/target/usr/bin/soffice)."
+        )
 
     result = subprocess.run(
         [
@@ -79,21 +83,51 @@ def generate_documents(tipo_permesso: str, data_dal, data_al, output_dir: str):
         timeout=60,
     )
     if result.returncode != 0:
-        return docx_path, None
+        raise RuntimeError(f"LibreOffice: conversione PDF fallita: {result.stderr}")
 
     pdf_path = os.path.join(output_dir, filename_base + ".pdf")
     if not os.path.exists(pdf_path):
-        return docx_path, None
+        raise RuntimeError(f"PDF non trovato dopo la conversione: {pdf_path}")
 
     return docx_path, pdf_path
 
 
 def _find_soffice():
-    """Return the path to soffice/libreoffice, or None if not available."""
+    """Return the path to soffice/libreoffice, or None if not available.
+
+    Search order:
+    1. SOFFICE_PATH environment variable (user override)
+    2. PATH (shutil.which)
+    3. Common Synology NAS installation paths
+    """
     import shutil
 
+    # 1. User-configured explicit path
+    env_path = os.environ.get("SOFFICE_PATH", "").strip()
+    if env_path and os.path.isfile(env_path) and os.access(env_path, os.X_OK):
+        return env_path
+
+    # 2. Standard PATH lookup
     for cmd in ("soffice", "libreoffice"):
         path = shutil.which(cmd)
         if path:
             return path
+
+    # 3. Common Synology / NAS installation paths
+    synology_candidates = [
+        # Package Center (DSM 6/7)
+        "/var/packages/LibreOffice/target/usr/bin/soffice",
+        "/var/packages/LibreOffice/target/usr/bin/libreoffice",
+        # Entware / opkg
+        "/opt/bin/soffice",
+        "/opt/bin/libreoffice",
+        "/opt/lib/libreoffice/program/soffice",
+        # Generic Linux fallbacks
+        "/usr/lib/libreoffice/program/soffice",
+        "/usr/local/lib/libreoffice/program/soffice",
+    ]
+    for candidate in synology_candidates:
+        if os.path.isfile(candidate) and os.access(candidate, os.X_OK):
+            return candidate
+
     return None

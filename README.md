@@ -9,7 +9,7 @@ Applicativo web per generare richieste di congedo/permesso in formato **Word** e
 | Requisito | Note |
 |-----------|------|
 | **Python 3.9+** | Su Synology: installa da *Package Center → Python 3* |
-| **LibreOffice** *(opzionale)* | Per la conversione in PDF. Su Synology: *Package Center → LibreOffice*. Se non disponibile, l'allegato email sarà in formato **DOCX**. |
+| **LibreOffice** | Per la conversione in PDF. Su Synology: *Package Center → LibreOffice*. Vedi [Configurazione percorso LibreOffice](#configurazione-percorso-libreoffice) se l'app non lo trova. |
 | **Git** | Su Synology: *Package Center → Git Server* oppure tramite `opkg` |
 | **Node.js + npm** | Per pm2. Su Synology: *Package Center → Node.js* |
 | **pm2** | Process manager: `npm install -g pm2` |
@@ -51,6 +51,13 @@ EMAIL_BODY=In allegato la richiesta di congedo/permesso di {NOME_COGNOME}.
 # Cartella di output (dove salvare DOCX e PDF)
 # Su Synology usa es. /volume1/permessi
 OUTPUT_DIR=./output
+
+# (Opzionale) Percorso assoluto di soffice/libreoffice se non trovato automaticamente.
+# Utile su Synology quando l'eseguibile non è nel PATH del processo.
+# Esempi:
+#   SOFFICE_PATH=/var/packages/LibreOffice/target/usr/bin/soffice   ← Package Center DSM 6/7
+#   SOFFICE_PATH=/opt/bin/soffice                                   ← Entware/opkg
+# SOFFICE_PATH=
 ```
 
 ---
@@ -89,6 +96,29 @@ pm2 delete permessi-asl     # rimozione dal registro pm2
 ```bash
 cd permessi-asl
 venv/bin/gunicorn --bind 0.0.0.0:3002 --workers 2 run:app
+```
+
+---
+
+## Configurazione percorso LibreOffice
+
+Su Synology, LibreOffice viene spesso installato in una cartella non standard che non è nel `PATH` del processo. L'app cerca automaticamente l'eseguibile nei seguenti percorsi:
+
+| Metodo di installazione | Percorso tipico |
+|-------------------------|-----------------|
+| Package Center (DSM 6/7) | `/var/packages/LibreOffice/target/usr/bin/soffice` |
+| Entware / opkg | `/opt/bin/soffice` |
+
+Se l'app non trova LibreOffice automaticamente, aggiungi nel file `.env`:
+
+```env
+SOFFICE_PATH=/var/packages/LibreOffice/target/usr/bin/soffice
+```
+
+Per trovare il percorso corretto sul tuo NAS, esegui da SSH:
+
+```bash
+find / -name "soffice" -type f 2>/dev/null
 ```
 
 ---
