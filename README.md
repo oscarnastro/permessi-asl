@@ -9,7 +9,7 @@ Applicativo web per generare richieste di congedo/permesso in formato **Word** e
 | Requisito | Note |
 |-----------|------|
 | **Python 3.9+** | Su Synology: installa da *Package Center → Python 3* |
-| **LibreOffice** | Per la conversione in PDF. Su Synology: *Package Center → LibreOffice* |
+| **LibreOffice** *(opzionale)* | Migliora la fedeltà del PDF (usa il tuo template Word). Se non disponibile, il PDF viene generato automaticamente con Python (senza dipendenze esterne). Su Synology: *Package Center → LibreOffice*. |
 | **Git** | Su Synology: *Package Center → Git Server* oppure tramite `opkg` |
 | **Node.js + npm** | Per pm2. Su Synology: *Package Center → Node.js* |
 | **pm2** | Process manager: `npm install -g pm2` |
@@ -51,6 +51,13 @@ EMAIL_BODY=In allegato la richiesta di congedo/permesso di {NOME_COGNOME}.
 # Cartella di output (dove salvare DOCX e PDF)
 # Su Synology usa es. /volume1/permessi
 OUTPUT_DIR=./output
+
+# (Opzionale) Percorso assoluto di soffice/libreoffice se non trovato automaticamente.
+# Utile su Synology quando l'eseguibile non è nel PATH del processo.
+# Esempi:
+#   SOFFICE_PATH=/var/packages/LibreOffice/target/usr/bin/soffice   ← Package Center DSM 6/7
+#   SOFFICE_PATH=/opt/bin/soffice                                   ← Entware/opkg
+# SOFFICE_PATH=
 ```
 
 ---
@@ -89,6 +96,38 @@ pm2 delete permessi-asl     # rimozione dal registro pm2
 ```bash
 cd permessi-asl
 venv/bin/gunicorn --bind 0.0.0.0:3002 --workers 2 run:app
+```
+
+---
+
+## Generazione PDF
+
+Il PDF viene sempre prodotto, anche senza LibreOffice:
+
+| Situazione | Come viene generato il PDF |
+|------------|---------------------------|
+| LibreOffice installato e trovato | Conversione da DOCX → PDF tramite LibreOffice (massima fedeltà al template Word) |
+| LibreOffice assente (es. NAS che non lo supporta) | Generazione diretta in Python con `fpdf2` (puro Python, nessuna dipendenza esterna) |
+
+### LibreOffice opzionale: migliorare la fedeltà del PDF
+
+Se vuoi che il PDF corrisponda esattamente al tuo template Word, installa LibreOffice. Su Synology l'eseguibile si trova spesso fuori dal `PATH` del processo; l'app lo cerca automaticamente nei percorsi comuni:
+
+| Metodo di installazione | Percorso tipico |
+|-------------------------|-----------------|
+| Package Center (DSM 6/7) | `/var/packages/LibreOffice/target/usr/bin/soffice` |
+| Entware / opkg | `/opt/bin/soffice` |
+
+Se l'app non lo trova, puoi indicarlo esplicitamente nel file `.env`:
+
+```env
+SOFFICE_PATH=/var/packages/LibreOffice/target/usr/bin/soffice
+```
+
+Per trovare il percorso corretto sul tuo NAS, esegui da SSH:
+
+```bash
+find / -name "soffice" -type f 2>/dev/null
 ```
 
 ---

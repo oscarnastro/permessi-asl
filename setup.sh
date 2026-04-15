@@ -19,12 +19,34 @@ fi
 echo "==> Python: $(python3 --version)"
 
 # 2. Verifica LibreOffice (necessario per la conversione PDF)
-if ! command -v soffice &>/dev/null; then
-  echo "ATTENZIONE: LibreOffice (soffice) non trovato."
-  echo "  La conversione PDF non funzionerà finché non viene installato."
-  echo "  Su Synology: installa il pacchetto 'LibreOffice' dal Package Center."
+_SOFFICE_PATH="${SOFFICE_PATH:-}"
+_SOFFICE_CANDIDATES=(
+  "$_SOFFICE_PATH"
+  "$(command -v soffice 2>/dev/null || true)"
+  "$(command -v libreoffice 2>/dev/null || true)"
+  "/var/packages/LibreOffice/target/usr/bin/soffice"
+  "/var/packages/LibreOffice/target/usr/bin/libreoffice"
+  "/opt/bin/soffice"
+  "/opt/bin/libreoffice"
+  "/opt/lib/libreoffice/program/soffice"
+  "/usr/lib/libreoffice/program/soffice"
+  "/usr/local/lib/libreoffice/program/soffice"
+)
+_SOFFICE_FOUND=""
+for _candidate in "${_SOFFICE_CANDIDATES[@]}"; do
+  if [ -n "$_candidate" ] && [ -x "$_candidate" ]; then
+    _SOFFICE_FOUND="$_candidate"
+    break
+  fi
+done
+
+if [ -z "$_SOFFICE_FOUND" ]; then
+  echo "INFO: LibreOffice non trovato – il PDF sarà generato in Python (fpdf2)."
+  echo "  Per massima fedeltà al template Word installa LibreOffice (opzionale)."
+  echo "  Se è installato in un percorso non standard, aggiungi nel .env:"
+  echo "    SOFFICE_PATH=/percorso/completo/soffice"
 else
-  echo "==> LibreOffice: $(soffice --version 2>/dev/null | head -1)"
+  echo "==> LibreOffice: $("$_SOFFICE_FOUND" --version 2>/dev/null | head -1) [$_SOFFICE_FOUND]"
 fi
 
 # 3. Crea virtualenv
