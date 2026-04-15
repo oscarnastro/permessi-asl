@@ -41,30 +41,14 @@ def generate_documents(tipo_permesso: str, data_dal, data_al, output_dir: str):
         key = t
         if t == tipo_permesso:
             context[f"sel_{key}"] = CHECKED
-            if t == "104":
-                context["giorni_104"] = str(_calc_days(data_dal, data_al))
-                context["data_104"] = _fmt_date(data_dal)
-                context["data_dal_104"] = _fmt_date(data_dal)
-                context["data_al_104"] = _fmt_date(data_al)
-            elif t == "altro":
-                context["giorni_altro"] = str(_calc_days(data_dal, data_al))
-                context["data_dal_altro"] = _fmt_date(data_dal)
-                context["data_al_altro"] = _fmt_date(data_al)
-            else:
-                context[f"giorni_{key}"] = str(_calc_days(data_dal, data_al))
-                context[f"data_dal_{key}"] = _fmt_date(data_dal)
-                context[f"data_al_{key}"] = _fmt_date(data_al)
+            context[f"giorni_{key}"] = str(_calc_days(data_dal, data_al))
+            context[f"data_dal_{key}"] = _fmt_date(data_dal)
+            context[f"data_al_{key}"] = _fmt_date(data_al)
         else:
             context[f"sel_{key}"] = UNCHECKED
-            if t == "104":
-                context["giorni_104"] = "___"
-                context["data_104"] = "___"
-                context["data_dal_104"] = "___"
-                context["data_al_104"] = "___"
-            else:
-                context[f"giorni_{key}"] = "___"
-                context[f"data_dal_{key}"] = "___"
-                context[f"data_al_{key}"] = "___"
+            context[f"giorni_{key}"] = "___"
+            context[f"data_dal_{key}"] = "___"
+            context[f"data_al_{key}"] = "___"
 
     tpl = DocxTemplate(TEMPLATE_PATH)
     tpl.render(context)

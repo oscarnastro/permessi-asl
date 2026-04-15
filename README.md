@@ -116,7 +116,8 @@ Assicurati che contenga i segnaposto Jinja2 elencati di seguito.
 | `{{ data_al_festivita }}` | Data fine |
 | `{{ sel_104 }}` | Segno di spunta |
 | `{{ giorni_104 }}` | Numero di giorni |
-| `{{ data_104 }}` | Data del giorno |
+| `{{ data_dal_104 }}` | Data inizio |
+| `{{ data_al_104 }}` | Data fine |
 | `{{ sel_legge }}` | Segno di spunta |
 | `{{ giorni_legge }}` | Numero di giorni |
 | `{{ data_dal_legge }}` | Data inizio |
