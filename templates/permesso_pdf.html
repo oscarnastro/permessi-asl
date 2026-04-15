@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    @page {
+      size: A4;
+      margin: 10mm 20mm 20mm 20mm;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Times New Roman", Times, serif;
+      font-size: 11pt;
+      color: #000;
+      line-height: 1.4;
+    }
+
+    /* ── Header intestazione ─────────────────────────────────── */
+    table.intestazione {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 14pt;
+    }
+
+    table.intestazione td {
+      vertical-align: middle;
+      padding: 0;
+    }
+
+    td.logo-cell {
+      width: 28%;
+    }
+
+    td.logo-cell img {
+      max-width: 100%;
+      max-height: 55pt;
+      display: block;
+    }
+
+    td.ente-cell {
+      width: 72%;
+      text-align: center;
+      font-size: 9pt;
+      line-height: 1.5;
+    }
+
+    td.ente-cell p {
+      margin: 0;
+    }
+
+    td.ente-cell p.ente-nome {
+      font-weight: bold;
+      font-size: 10pt;
+    }
+
+    /* ── Titolo ──────────────────────────────────────────────── */
+    h1.titolo {
+      text-align: center;
+      font-size: 13pt;
+      font-weight: bold;
+      text-transform: uppercase;
+      margin-bottom: 18pt;
+      letter-spacing: 0.5pt;
+    }
+
+    p.intro {
+      margin-bottom: 12pt;
+      text-align: justify;
+    }
+
+    p.intro strong {
+      font-weight: bold;
+      text-decoration: underline;
+    }
+
+    /* Permission type rows */
+    ul.tipi {
+      list-style: none;
+      margin: 0 0 18pt 0;
+      padding: 0;
+    }
+
+    ul.tipi li {
+      padding: 4pt 0;
+      border-bottom: 1px solid #ccc;
+      font-size: 10.5pt;
+      line-height: 1.5;
+    }
+
+    ul.tipi li:first-child {
+      border-top: 1px solid #ccc;
+    }
+
+    ul.tipi li .checkbox {
+      font-family: "Courier New", Courier, monospace;
+      font-weight: bold;
+      margin-right: 6pt;
+      font-size: 10pt;
+    }
+
+    ul.tipi li .val {
+      font-weight: bold;
+      text-decoration: underline;
+      min-width: 50pt;
+      display: inline-block;
+    }
+
+    /* Signature row */
+    table.firma-row {
+      width: 100%;
+      margin-top: 24pt;
+      margin-bottom: 30pt;
+      border-collapse: collapse;
+    }
+
+    table.firma-row td {
+      vertical-align: bottom;
+      padding: 0;
+    }
+
+    td.data-cell {
+      width: 40%;
+      font-size: 10.5pt;
+    }
+
+    td.data-cell .label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 2pt;
+    }
+
+    td.data-cell .valore {
+      border-bottom: 1pt solid #000;
+      display: inline-block;
+      min-width: 80pt;
+      padding-bottom: 2pt;
+    }
+
+    td.firma-cell {
+      width: 60%;
+      text-align: right;
+      font-size: 10.5pt;
+    }
+
+    td.firma-cell .label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 4pt;
+    }
+
+    td.firma-cell .firma-img {
+      max-height: 36pt;
+      max-width: 160pt;
+      display: inline-block;
+      vertical-align: bottom;
+    }
+
+    td.firma-cell .riga-firma {
+      border-top: 1pt solid #000;
+      width: 160pt;
+      display: inline-block;
+    }
+
+    /* Horizontal rule separating the two sections */
+    hr.sezione {
+      border: none;
+      border-top: 1pt solid #000;
+      margin: 8pt 0 14pt 0;
+    }
+
+    /* Director's approval area */
+    p.parere-titolo {
+      font-size: 10.5pt;
+      margin-bottom: 6pt;
+    }
+
+    p.parere-voce {
+      font-size: 10.5pt;
+      margin-bottom: 4pt;
+      padding-left: 12pt;
+    }
+
+    p.parere-voce::before {
+      content: "☐  ";
+      font-size: 11pt;
+    }
+
+    .spazio-note {
+      border-bottom: 1pt solid #000;
+      height: 14pt;
+      margin-top: 4pt;
+      margin-left: 12pt;
+    }
+
+    /* Footer / UOC block */
+    div.uoc-block {
+      text-align: center;
+      margin-top: 24pt;
+      font-size: 10.5pt;
+    }
+
+    div.uoc-block p {
+      margin-bottom: 2pt;
+    }
+
+    div.uoc-block p.bold {
+      font-weight: bold;
+    }
+
+    div.uoc-block .firma-direttore {
+      max-height: 40pt;
+      max-width: 160pt;
+      display: block;
+      margin: 4pt auto;
+    }
+</style>
+</head>
+<body>
+
+  <!-- Intestazione con logo e dati ente -->
+  <table class="intestazione">
+    <tr>
+      <td class="logo-cell">
+        <img src="data:image/jpeg;base64,{{ logo_b64 }}" alt="Logo ASL Napoli 3 Sud" />
+      </td>
+      <td class="ente-cell">
+        <p class="ente-nome">UOC Controllo di Gestione</p>
+        <p>Corso Alcide de Gasperi, 167 – 80053 Castellammare di Stabia (NA)</p>
+        <p>TEL. 0818729023/074/778/075/039</p>
+        <p>E-mail scog@aslnapoli3sud.it</p>
+        <p>Pec: scog@pec.aslnapoli3sud.it</p>
+        <p>Sito: www.aslnapoli3sud.it</p>
+      </td>
+    </tr>
+  </table>
+
+  <h1 class="titolo">Richiesta di Congedo e/o Permesso</h1>
+
+  <p class="intro">
+    La sottoscritta <strong>{{ NOME_COGNOME }}</strong> matricola n°
+    <strong>{{ MATRICOLA }}</strong> in servizio presso la
+    <strong>{{ SERVIZIO }}</strong> chiede di fruire di:
+  </p>
+
+  <ul class="tipi">
+
+    <li>
+      <span class="checkbox">{{ sel_congedo }}</span>
+      Congedo ordinario &nbsp; n°&nbsp;<span class="val">{{ giorni_congedo }}</span>&nbsp;giorni
+      &nbsp;&nbsp; dal &nbsp;<span class="val">{{ data_dal_congedo }}</span>
+      &nbsp; al &nbsp;<span class="val">{{ data_al_congedo }}</span>
+    </li>
+
+    <li>
+      <span class="checkbox">{{ sel_festivita }}</span>
+      Festività soppresse &nbsp; n°&nbsp;<span class="val">{{ giorni_festivita }}</span>&nbsp;giorni
+      &nbsp;&nbsp; a decorrere dal &nbsp;<span class="val">{{ data_dal_festivita }}</span>
+      &nbsp; fino a tutto il &nbsp;<span class="val">{{ data_al_festivita }}</span>
+    </li>
+
+    <li>
+      <span class="checkbox">{{ sel_104 }}</span>
+      104/95 art. 3 &nbsp; n°&nbsp;<span class="val">{{ giorni_104 }}</span>&nbsp;giorni
+      &nbsp;&nbsp; a decorrere &nbsp;<span class="val">{{ data_dal_104 }}</span>
+      &nbsp; fino a tutto il &nbsp;<span class="val">{{ data_al_104 }}</span>
+    </li>
+
+    <li>
+      <span class="checkbox">{{ sel_legge }}</span>
+      Legge Permesso art. 54 (ex 40 – prestazioni specialistiche / esami diagnostici) &nbsp;
+      n°&nbsp;<span class="val">{{ giorni_legge }}</span>&nbsp;giorni
+      &nbsp;&nbsp; a decorrere dal &nbsp;<span class="val">{{ data_dal_legge }}</span>
+      &nbsp; fino a tutto il &nbsp;<span class="val">{{ data_al_legge }}</span>
+    </li>
+
+    <li>
+      <span class="checkbox">{{ sel_altro }}</span>
+      Altro &nbsp; n°&nbsp;<span class="val">{{ giorni_altro }}</span>&nbsp;giorni
+      &nbsp;&nbsp; a decorrere dal &nbsp;<span class="val">{{ data_dal_altro }}</span>
+      &nbsp; fino a tutto il &nbsp;<span class="val">{{ data_al_altro }}</span>
+    </li>
+
+  </ul>
+
+  <table class="firma-row">
+    <tr>
+      <td class="data-cell">
+        <span class="label">Data</span>
+        <span class="valore">{{ DATA_CREAZIONE }}</span>
+      </td>
+      <td class="firma-cell">
+        <span class="label">Firma del richiedente</span>
+        <span class="riga-firma">&nbsp;</span>
+      </td>
+    </tr>
+  </table>
+
+  <hr class="sezione" />
+
+  <p class="parere-titolo">Viste le esigenze di servizio si esprime parere:</p>
+  <p class="parere-voce">Favorevole</p>
+  <p class="parere-voce">Non favorevole per il seguente motivo:</p>
+  <div class="spazio-note"></div>
+
+  <div class="uoc-block">
+    <p class="bold">U.O.C. Controllo di Gestione</p>
+    <p class="bold">Il Direttore f.f.</p>
+    <img src="data:image/png;base64,{{ firma_b64 }}" alt="Firma Direttore" class="firma-direttore" />
+    <p>Dott.ssa A. De Stefano</p>
+  </div>
+
+</body>
+</html>
