@@ -1,16 +1,6 @@
 import os
-import subprocess
 from datetime import date, datetime
-from docxtpl import DocxTemplate
 
-TEMPLATE_PATH = os.path.join(
-    os.path.dirname(os.path.dirname(__file__)), "template", "permesso_template.docx"
-)
-
-CHECKED = "☒"
-UNCHECKED = "○"
-
-# Symbols used in the native PDF (built-in fonts only support Latin-1)
 _PDF_CHECKED = "[X]"
 _PDF_UNCHECKED = "[ ]"
 
@@ -41,7 +31,7 @@ def generate_documents(tipo_permesso: str, data_dal, data_al, output_dir: str):
     os.makedirs(output_dir, exist_ok=True)
 
     types = ["congedo", "festivita", "104", "legge", "altro"]
-    
+
     context = {
         "NOME_COGNOME": os.environ.get("NOME_COGNOME", "___"),
         "MATRICOLA": os.environ.get("MATRICOLA", "___"),
@@ -50,52 +40,23 @@ def generate_documents(tipo_permesso: str, data_dal, data_al, output_dir: str):
     }
 
     for t in types:
-        key = t
         if t == tipo_permesso:
-            context[f"sel_{key}"] = CHECKED
-            context[f"giorni_{key}"] = str(_calc_days(data_dal, data_al))
-            context[f"data_dal_{key}"] = _fmt_date(data_dal)
-            context[f"data_al_{key}"] = _fmt_date(data_al)
+            context[f"sel_{t}"] = _PDF_CHECKED
+            context[f"giorni_{t}"] = str(_calc_days(data_dal, data_al))
+            context[f"data_dal_{t}"] = _fmt_date(data_dal)
+            context[f"data_al_{t}"] = _fmt_date(data_al)
         else:
-            context[f"sel_{key}"] = UNCHECKED
-            context[f"giorni_{key}"] = "___"
-            context[f"data_dal_{key}"] = "___"
-            context[f"data_al_{key}"] = "___"
-
-    tpl = DocxTemplate(TEMPLATE_PATH)
-    tpl.render(context)
+            context[f"sel_{t}"] = _PDF_UNCHECKED
+            context[f"giorni_{t}"] = "___"
+            context[f"data_dal_{t}"] = "___"
+            context[f"data_al_{t}"] = "___"
 
     cognome = os.environ.get("NOME_COGNOME", "DIPENDENTE").replace(" ", "_")
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename_base = f"permesso_{cognome}_{timestamp}"
+    pdf_path = os.path.join(output_dir, f"permesso_{cognome}_{timestamp}.pdf")
 
-    docx_path = os.path.join(output_dir, filename_base + ".docx")
-    tpl.save(docx_path)
-
-    pdf_path = os.path.join(output_dir, filename_base + ".pdf")
-
-    soffice = _find_soffice()
-    if soffice is not None:
-        result = subprocess.run(
-            [
-                soffice,
-                "--headless",
-                "--convert-to",
-                "pdf",
-                "--outdir",
-                output_dir,
-                docx_path,
-            ],
-            capture_output=True,
-            text=True,
-            timeout=60,
-        )
-        if result.returncode == 0 and os.path.exists(pdf_path):
-            return docx_path, pdf_path
-
-    # LibreOffice not available or conversion failed – generate PDF natively
     _generate_pdf_native(context, types, tipo_permesso, pdf_path)
-    return docx_path, pdf_path
+    return pdf_path
 
 
 def _generate_pdf_native(context: dict, types: list, tipo_permesso: str, pdf_path: str) -> None:
@@ -176,86 +137,3 @@ def _generate_pdf_native(context: dict, types: list, tipo_permesso: str, pdf_pat
     pdf.cell(sig_w, 10, "", border="B", new_x="LMARGIN", new_y="NEXT")
 
     pdf.output(pdf_path)
-
-
-def _find_soffice():
-    """Return the path to soffice/libreoffice, or None if not available.
-
-    Search order:
-    1. SOFFICE_PATH environment variable (user override)
-    2. PATH (shutil.which)
-    3. Common Synology NAS installation paths
-    """
-    import shutil
-
-    # 1. User-configured explicit path
-    env_path = os.environ.get("SOFFICE_PATH", "").strip()
-    if env_path and os.path.isfile(env_path) and os.access(env_path, os.X_OK):
-        return env_path
-
-    # 2. Standard PATH lookup
-    for cmd in ("soffice", "libreoffice"):
-        path = shutil.which(cmd)
-        if path:
-            return path
-
-    # 3. Common Synology / NAS installation paths
-    synology_candidates = [
-        # Package Center (DSM 6/7)
-        "/var/packages/LibreOffice/target/usr/bin/soffice",
-        "/var/packages/LibreOffice/target/usr/bin/libreoffice",
-        # Entware / opkg
-        "/opt/bin/soffice",
-        "/opt/bin/libreoffice",
-        "/opt/lib/libreoffice/program/soffice",
-        # Generic Linux fallbacks
-        "/usr/lib/libreoffice/program/soffice",
-        "/usr/local/lib/libreoffice/program/soffice",
-    ]
-    for candidate in synology_candidates:
-        if os.path.isfile(candidate) and os.access(candidate, os.X_OK):
-            return candidate
-
-    return None
-
-
-
-def _find_soffice():
-    """Return the path to soffice/libreoffice, or None if not available.
-
-    Search order:
-    1. SOFFICE_PATH environment variable (user override)
-    2. PATH (shutil.which)
-    3. Common Synology NAS installation paths
-    """
-    import shutil
-
-    # 1. User-configured explicit path
-    env_path = os.environ.get("SOFFICE_PATH", "").strip()
-    if env_path and os.path.isfile(env_path) and os.access(env_path, os.X_OK):
-        return env_path
-
-    # 2. Standard PATH lookup
-    for cmd in ("soffice", "libreoffice"):
-        path = shutil.which(cmd)
-        if path:
-            return path
-
-    # 3. Common Synology / NAS installation paths
-    synology_candidates = [
-        # Package Center (DSM 6/7)
-        "/var/packages/LibreOffice/target/usr/bin/soffice",
-        "/var/packages/LibreOffice/target/usr/bin/libreoffice",
-        # Entware / opkg
-        "/opt/bin/soffice",
-        "/opt/bin/libreoffice",
-        "/opt/lib/libreoffice/program/soffice",
-        # Generic Linux fallbacks
-        "/usr/lib/libreoffice/program/soffice",
-        "/usr/local/lib/libreoffice/program/soffice",
-    ]
-    for candidate in synology_candidates:
-        if os.path.isfile(candidate) and os.access(candidate, os.X_OK):
-            return candidate
-
-    return None

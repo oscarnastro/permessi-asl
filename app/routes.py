@@ -52,7 +52,7 @@ def genera():
         return jsonify({"ok": False, "errors": errors}), 400
 
     try:
-        docx_path, pdf_path = generate_documents(
+        pdf_path = generate_documents(
             tipo_permesso=tipo,
             data_dal=data_dal,
             data_al=data_al,
