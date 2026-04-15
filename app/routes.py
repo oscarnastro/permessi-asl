@@ -61,4 +61,4 @@ def genera():
         return jsonify({"ok": True, "message": "Permesso generato e inviato con successo."})
     except Exception as exc:
         current_app.logger.exception("Errore nella generazione o invio del permesso")
-        return jsonify({"ok": False, "errors": {"general": str(exc)}}), 500
+        return jsonify({"ok": False, "errors": {"general": "Errore interno del server. Contatta l'amministratore."}}), 500

@@ -34,7 +34,7 @@ def generate_documents(tipo_permesso: str, data_dal, data_al, output_dir: str):
     }
 
     for t in types:
-        key = t.replace("/", "_")
+        key = t
         if t == tipo_permesso:
             context[f"sel_{key}"] = CHECKED
             if t == "104":
