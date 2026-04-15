@@ -5,7 +5,7 @@
 # ============================================================
 set -euo pipefail
 
-APP_DIR="$(cd ""){dirname "$0"} && pwd)"
+APP_DIR="$(cd "").
 VENV_DIR="$APP_DIR/venv"
 SERVICE_NAME="permessi-asl"
 
@@ -89,7 +89,7 @@ if ! command -v pm2 &>/dev/null; then
   echo "ATTENZIONE: pm2 non trovato."
   echo "  Installalo con: npm install -g pm2"
   echo "  Poi avvia manualmente con: pm2 start ecosystem.config.js"
-else
+els
   echo "==> pm2: $(pm2 --version)"
   # Ferma l'eventuale istanza precedente (ignora errore se non esiste)
 pm2 delete "$SERVICE_NAME" 2>/dev/null || true
@@ -100,6 +100,5 @@ pm2 save
   echo "      pm2 startup"
   echo "    e segui le istruzioni mostrate."
 fi
-
 echo ""
 echo "✅ Setup completato. L'app sarà raggiungibile su http://<IP-NAS>:3002"
