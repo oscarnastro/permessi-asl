@@ -13,8 +13,6 @@ Applicativo web per generare richieste di congedo/permesso in formato **Word** e
 | **Git** | Su Synology: *Package Center → Git Server* oppure tramite `opkg` |
 | **Node.js + npm** | Per pm2. Su Synology: *Package Center → Node.js* |
 | **pm2** | Process manager: `npm install -g pm2` |
-| **SSH abilitato** | Per il deploy automatico via GitHub Actions |
-
 ---
 
 ## Primo avvio (installazione)
@@ -91,34 +89,6 @@ pm2 delete permessi-asl     # rimozione dal registro pm2
 ```bash
 cd permessi-asl
 venv/bin/gunicorn --bind 0.0.0.0:3002 --workers 2 run:app
-```
-
----
-
-## Continuous Integration / Deploy automatico
-
-Ad ogni push sul branch `main`, GitHub Actions esegue via SSH:
-1. `git pull origin main`
-2. `pip install -r requirements.txt`
-3. Rigenerazione del template Word
-4. `pm2 restart permessi-asl`
-
-### Segreti da configurare in GitHub
-*Settings → Secrets → Actions:*
-
-| Segreto | Esempio |
-|---------|---------|
-| `NAS_HOST` | `192.168.1.100` |
-| `NAS_USER` | `admin` |
-| `NAS_SSH_KEY` | chiave privata SSH (es. contenuto di `~/.ssh/id_ed25519`) |
-| `NAS_APP_PATH` | `/volume1/homes/admin/permessi-asl` |
-
-#### Generare la coppia di chiavi SSH (se non ce l'hai già)
-```bash
-ssh-keygen -t ed25519 -C "github-deploy" -f ~/.ssh/nas_deploy
-# Copia la chiave pubblica sul NAS
-ssh-copy-id -i ~/.ssh/nas_deploy.pub admin@<IP-NAS>
-# Il contenuto di ~/.ssh/nas_deploy va nel segreto NAS_SSH_KEY
 ```
 
 ---
