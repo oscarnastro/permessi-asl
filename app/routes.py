@@ -1,4 +1,5 @@
-from flask import Blueprint, render_template, request, jsonify, current_app
+from flask import Blueprint, render_template, request, jsonify, current_app, send_from_directory
+import os
 from datetime import datetime
 from .generator import generate_documents
 from .mailer import send_mail
@@ -8,6 +9,14 @@ bp = Blueprint("main", __name__)
 @bp.route("/")
 def index():
     return render_template("index.html")
+
+@bp.route("/sw.js")
+def service_worker():
+    static_dir = current_app.static_folder
+    response = send_from_directory(static_dir, "sw.js")
+    response.headers["Service-Worker-Allowed"] = "/"
+    response.headers["Cache-Control"] = "no-cache"
+    return response
 
 @bp.route("/genera", methods=["POST"])
 def genera():
