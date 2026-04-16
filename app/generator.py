@@ -1,16 +1,14 @@
 import os
 from datetime import date, datetime
 
-import requests
+import cloudmersive_convert_api_client
+from cloudmersive_convert_api_client.rest import ApiException
 from docxtpl import DocxTemplate
 
 _DOCX_CHECKED = "☒"
 _DOCX_UNCHECKED = "○"
 
 _TEMPLATE_PATH = os.path.join(os.path.dirname(__file__), "..", "permesso_template.docx")
-
-_CLOUDMERSIVE_URL = "https://api.cloudmersive.com/convert/word/docx/to/pdf"
-_DOCX_MIME = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
 
 
 def _fmt_date(d):
@@ -69,20 +67,21 @@ def _fill_docx_template(context: dict, docx_path: str) -> None:
 
 
 def _convert_docx_to_pdf_cloudmersive(docx_path: str, pdf_path: str) -> None:
-    """Convert a DOCX file to PDF using the Cloudmersive Convert API."""
+    """Convert a DOCX file to PDF using the Cloudmersive Convert API SDK."""
     api_key = os.environ.get("CLOUDMERSIVE_API_KEY", "")
     if not api_key:
         raise ValueError("CLOUDMERSIVE_API_KEY environment variable non configurata")
 
-    with open(docx_path, "rb") as f:
-        response = requests.post(
-            _CLOUDMERSIVE_URL,
-            headers={"Apikey": api_key},
-            files={"inputFile": (os.path.basename(docx_path), f, _DOCX_MIME)},
-            timeout=60,
-        )
+    configuration = cloudmersive_convert_api_client.Configuration()
+    configuration.api_key["Apikey"] = api_key
+    api_instance = cloudmersive_convert_api_client.ConvertDocumentApi(
+        cloudmersive_convert_api_client.ApiClient(configuration)
+    )
 
-    response.raise_for_status()
+    try:
+        pdf_data = api_instance.convert_document_docx_to_pdf(docx_path)
+    except ApiException as e:
+        raise RuntimeError(f"Errore nella conversione DOCX -> PDF: {e}") from e
 
     with open(pdf_path, "wb") as f:
-        f.write(response.content)
+        f.write(pdf_data)
