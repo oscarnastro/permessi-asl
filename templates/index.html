@@ -22,6 +22,20 @@
   <link rel="icon" type="image/png" sizes="16x16" href="/static/icons/icon-16x16.png" />
   <link rel="apple-touch-icon" sizes="180x180" href="/static/icons/apple-touch-icon.png" />
 
+  <!-- Duet Date Picker -->
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/@duetds/date-picker@1.4.0/dist/duet/themes/default.css"
+        integrity="sha384-49HNOBJJyd49ScV2OWrqBXajgjMjZDZ4mNTy5Nlr05z+sT0MoGu161j1GkEBvT0P"
+        crossorigin="anonymous" />
+  <script type="module"
+          src="https://cdn.jsdelivr.net/npm/@duetds/date-picker@1.4.0/dist/duet/duet.esm.js"
+          integrity="sha384-f/at0X+t6h5Pbz7pUbo3fxfnLYcsqvRUlNxXmKeg9RTKUMZabWMyigINsgQBD/kl"
+          crossorigin="anonymous"></script>
+  <script nomodule
+          src="https://cdn.jsdelivr.net/npm/@duetds/date-picker@1.4.0/dist/duet/duet.js"
+          integrity="sha384-aoJaHSZ8l+yXP+KcHxUZgsjAxYvsdXbf2lEQWMeq+vaiM8mdRhH+KcCH03T5/k5b"
+          crossorigin="anonymous"></script>
+
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     .radio-card input[type="radio"]:checked + label {
@@ -32,6 +46,45 @@
     .radio-card input[type="radio"]:focus-visible + label {
       outline: 3px solid #4f46e5;
       outline-offset: 2px;
+    }
+
+    /* Theme Duet Date Picker with the indigo palette */
+    :root {
+      --duet-color-primary: #4f46e5;
+      --duet-color-text: #1f2937;
+      --duet-color-text-active: #ffffff;
+      --duet-color-placeholder: #9ca3af;
+      --duet-color-button: #f3f4f6;
+      --duet-color-surface: #ffffff;
+      --duet-color-overlay: rgba(0, 0, 0, 0.6);
+      --duet-color-border: #e5e7eb;
+      --duet-font: inherit;
+      --duet-font-normal: 400;
+      --duet-font-bold: 600;
+      --duet-radius: 0.75rem;
+      --duet-z-index: 600;
+    }
+
+    /* Match input style to the rest of the form */
+    .duet-date__input {
+      width: 100%;
+      padding: 0.625rem 1rem;
+      border-radius: 0.75rem;
+      border: 2px solid #e5e7eb;
+      color: #1f2937;
+      font-size: 1rem;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      outline: none;
+    }
+    .duet-date__input:focus {
+      border-color: #6366f1;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+    }
+    .duet-date__toggle {
+      border-radius: 0 0.75rem 0.75rem 0;
+    }
+    .duet-date[data-invalid] .duet-date__input {
+      border-color: #ef4444;
     }
   </style>
 </head>
@@ -146,14 +199,13 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <!-- Dal -->
             <div>
-              <label for="data_dal" class="block text-sm font-medium text-gray-700 mb-1">
-                Dal
-                <span id="dal-required-indicator" class="text-red-500 ml-1" aria-label="obbligatorio">*</span>
-              </label>
-              <input type="date" id="data_dal" name="data_dal"
-                     aria-required="true"
-                     aria-describedby="dal-error"
-                     class="w-full px-4 py-2.5 rounded-xl border-2 border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all text-gray-800" />
+              <duet-date-picker
+                identifier="data_dal"
+                name="data_dal"
+                label="Dal"
+                required
+                aria-describedby="dal-error"
+              ></duet-date-picker>
               <div id="dal-error" role="alert" class="hidden text-red-600 text-xs mt-1 flex items-center gap-1">
                 <svg class="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                   <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
@@ -164,14 +216,13 @@
 
             <!-- Al -->
             <div>
-              <label for="data_al" class="block text-sm font-medium text-gray-700 mb-1">
-                Al
-                <span id="al-required-indicator" class="text-red-500 ml-1" aria-label="obbligatorio">*</span>
-              </label>
-              <input type="date" id="data_al" name="data_al"
-                     aria-required="true"
-                     aria-describedby="al-error"
-                     class="w-full px-4 py-2.5 rounded-xl border-2 border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all text-gray-800" />
+              <duet-date-picker
+                identifier="data_al"
+                name="data_al"
+                label="Al"
+                required
+                aria-describedby="al-error"
+              ></duet-date-picker>
               <div id="al-error" role="alert" class="hidden text-red-600 text-xs mt-1 flex items-center gap-1">
                 <svg class="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                   <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
@@ -211,8 +262,6 @@
 
   <script>
     const form = document.getElementById('permesso-form');
-    const dataDal = document.getElementById('data_dal');
-    const dataAl = document.getElementById('data_al');
     const giorni = document.getElementById('giorni-display');
     const giorniCount = document.getElementById('giorni-count');
     const submitBtn = document.getElementById('submit-btn');
@@ -222,6 +271,148 @@
     const alertBox = document.getElementById('alert-box');
     const alertInner = document.getElementById('alert-inner');
     const liveRegion = document.getElementById('live-region');
+
+    // ISO date values kept in sync via duetChange events
+    let dataDalValue = '';
+    let dataAlValue = '';
+
+    // Italian localization for Duet Date Picker
+    const itLocalization = {
+      buttonLabel: 'Scegli data',
+      placeholder: 'gg/mm/aaaa',
+      selectedDateMessage: 'La data selezionata è',
+      prevMonthLabel: 'Mese precedente',
+      nextMonthLabel: 'Mese successivo',
+      monthSelectLabel: 'Mese',
+      yearSelectLabel: 'Anno',
+      closeLabel: 'Chiudi il calendario',
+      keyboardInstruction: 'Puoi usare i tasti freccia per navigare le date',
+      calendarHeading: 'Scegli una data',
+      dayNames: ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'],
+      monthNames: [
+        'Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno',
+        'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre',
+      ],
+      monthNamesShort: [
+        'Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu',
+        'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic',
+      ],
+      locale: 'it-IT',
+      dateAdapter: {
+        parse(value) {
+          // Accept ISO yyyy-mm-dd or Italian dd/mm/yyyy and dd-mm-yyyy
+          if (!value) return undefined;
+          const isoMatch = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+          if (isoMatch) {
+            const year  = parseInt(isoMatch[1], 10);
+            const month = parseInt(isoMatch[2], 10);
+            const day   = parseInt(isoMatch[3], 10);
+            if (month < 1 || month > 12 || day < 1 || day > 31) return undefined;
+            const d = new Date(year, month - 1, day);
+            if (d.getFullYear() !== year || d.getMonth() + 1 !== month || d.getDate() !== day) return undefined;
+            return d;
+          }
+          const itMatch = /^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/.exec(value);
+          if (itMatch) {
+            const day   = parseInt(itMatch[1], 10);
+            const month = parseInt(itMatch[2], 10);
+            const year  = parseInt(itMatch[3], 10);
+            if (month < 1 || month > 12 || day < 1 || day > 31) return undefined;
+            const d = new Date(year, month - 1, day);
+            if (d.getFullYear() !== year || d.getMonth() + 1 !== month || d.getDate() !== day) return undefined;
+            return d;
+          }
+          return undefined;
+        },
+        format(date) {
+          const dd = String(date.getDate()).padStart(2, '0');
+          const mm = String(date.getMonth() + 1).padStart(2, '0');
+          const yyyy = date.getFullYear();
+          return `${dd}/${mm}/${yyyy}`;
+        },
+      },
+    };
+
+    // Milliseconds to wait for the CDN scripts before falling back to native inputs.
+    // 5 s gives room for slow connections while not delaying the fallback indefinitely.
+    const CDN_TIMEOUT_MS = 5000;
+
+    // Race: apply localization and wire per-element duetChange listeners as soon as
+    // the component is defined, but give up after CDN_TIMEOUT_MS and fall back.
+    let cdnFailed = false;
+    const pickerReadyPromise = customElements.whenDefined('duet-date-picker');
+    const cdnTimeoutPromise  = new Promise(resolve => setTimeout(() => { cdnFailed = true; resolve(); }, CDN_TIMEOUT_MS));
+
+    Promise.race([pickerReadyPromise, cdnTimeoutPromise]).then(() => {
+      if (cdnFailed) {
+        // Timeout won the race — activate native input fallback
+        activateFallbackInputs();
+        return;
+      }
+      const pickerDal = document.querySelector('duet-date-picker[identifier="data_dal"]');
+      const pickerAl  = document.querySelector('duet-date-picker[identifier="data_al"]');
+      if (pickerDal) {
+        pickerDal.localization = itLocalization;
+        pickerDal.addEventListener('duetChange', (e) => {
+          dataDalValue = e.detail.value || '';
+          clearFieldError('dal');
+          calcGiorni();
+        });
+      }
+      if (pickerAl) {
+        pickerAl.localization = itLocalization;
+        pickerAl.addEventListener('duetChange', (e) => {
+          dataAlValue = e.detail.value || '';
+          clearFieldError('al');
+          calcGiorni();
+        });
+      }
+    });
+
+    function activateFallbackInputs() {
+      document.querySelectorAll('duet-date-picker').forEach(picker => {
+        const id    = picker.getAttribute('identifier');
+        const label = picker.getAttribute('label') || id;
+        const errId = id === 'data_dal' ? 'dal-error' : 'al-error';
+
+        // Build label element safely (no innerHTML) to avoid XSS
+        const labelEl = document.createElement('label');
+        labelEl.htmlFor = id;
+        labelEl.className = 'block text-sm font-medium text-gray-700 mb-1';
+        labelEl.textContent = label + ' ';
+        const reqSpan = document.createElement('span');
+        reqSpan.className = 'text-red-500 ml-1';
+        reqSpan.setAttribute('aria-label', 'obbligatorio');
+        reqSpan.textContent = '*';
+        labelEl.appendChild(reqSpan);
+
+        const input = document.createElement('input');
+        input.type = 'date';
+        input.id   = id;
+        input.name = id;
+        input.setAttribute('aria-required', 'true');
+        input.setAttribute('aria-describedby', errId);
+        input.className = 'w-full px-4 py-2.5 rounded-xl border-2 border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all text-gray-800';
+
+        picker.replaceWith(labelEl, input);
+      });
+      const fallbackDal = document.getElementById('data_dal');
+      const fallbackAl  = document.getElementById('data_al');
+      if (fallbackDal) {
+        fallbackDal.addEventListener('change', () => {
+          dataDalValue = fallbackDal.value;
+          calcGiorni();
+          clearFieldError('dal');
+        });
+      }
+      if (fallbackAl) {
+        fallbackAl.addEventListener('change', () => {
+          dataAlValue = fallbackAl.value;
+          calcGiorni();
+          clearFieldError('al');
+        });
+      }
+    }
 
     function getSelectedTipo() {
       const checked = document.querySelector('input[name="tipo_permesso"]:checked');
@@ -237,9 +428,9 @@
     }
 
     function calcGiorni() {
-      if (dataDal.value && dataAl.value) {
-        const d1 = new Date(dataDal.value);
-        const d2 = new Date(dataAl.value);
+      if (dataDalValue && dataAlValue) {
+        const d1 = new Date(dataDalValue);
+        const d2 = new Date(dataAlValue);
         const diff = Math.round((d2 - d1) / 86400000) + 1;
         if (diff > 0) {
           giorniCount.textContent = diff;
@@ -298,15 +489,15 @@
         valid = false;
       }
 
-      if (!dataDal.value) {
+      if (!dataDalValue) {
         showFieldError('dal', 'La data di inizio è obbligatoria.');
         valid = false;
       }
-      if (!dataAl.value) {
+      if (!dataAlValue) {
         showFieldError('al', 'La data di fine è obbligatoria.');
         valid = false;
       }
-      if (dataDal.value && dataAl.value && dataAl.value < dataDal.value) {
+      if (dataDalValue && dataAlValue && dataAlValue < dataDalValue) {
         showFieldError('al', 'La data di fine deve essere uguale o successiva alla data di inizio.');
         valid = false;
       }
@@ -321,9 +512,6 @@
         clearFieldError('tipo');
       });
     });
-
-    dataDal.addEventListener('change', () => { calcGiorni(); clearFieldError('dal'); });
-    dataAl.addEventListener('change', () => { calcGiorni(); clearFieldError('al'); });
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -340,8 +528,8 @@
 
       const payload = {
         tipo_permesso: getSelectedTipo(),
-        data_dal: dataDal.value,
-        data_al: dataAl.value,
+        data_dal: dataDalValue,
+        data_al: dataAlValue,
       };
 
       try {
@@ -358,6 +546,13 @@
           updateCheckDots();
           giorni.classList.add('hidden');
           clearAllErrors();
+          // Clear Duet pickers
+          dataDalValue = '';
+          dataAlValue = '';
+          const pickerDal = document.querySelector('duet-date-picker[identifier="data_dal"]');
+          const pickerAl  = document.querySelector('duet-date-picker[identifier="data_al"]');
+          if (pickerDal) pickerDal.value = '';
+          if (pickerAl)  pickerAl.value  = '';
         } else {
           const errors = json.errors || {};
           if (errors.tipo_permesso) showFieldError('tipo', errors.tipo_permesso);
