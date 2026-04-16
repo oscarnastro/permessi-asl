@@ -72,9 +72,11 @@ def _convert_docx_to_pdf_cloudmersive(docx_path: str, pdf_path: str) -> None:
     if not api_key:
         raise ValueError("CLOUDMERSIVE_API_KEY environment variable non configurata")
 
-    api_instance = cloudmersive_convert_api_client.ConvertDocumentApi()
-    api_instance.api_client.configuration.api_key = {}
-    api_instance.api_client.configuration.api_key["Apikey"] = api_key
+    configuration = cloudmersive_convert_api_client.Configuration()
+    configuration.api_key["Apikey"] = api_key
+    api_instance = cloudmersive_convert_api_client.ConvertDocumentApi(
+        cloudmersive_convert_api_client.ApiClient(configuration)
+    )
 
     try:
         pdf_data = api_instance.convert_document_docx_to_pdf(docx_path)
