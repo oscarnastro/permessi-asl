@@ -9,10 +9,10 @@ Applicativo web per generare richieste di congedo/permesso in formato **Word** e
 | Requisito | Note |
 |-----------|------|
 | **Python 3.9+** | Su Synology: installa da *Package Center → Python 3* |
-| **LibreOffice** *(opzionale)* | Migliora la fedeltà del PDF (usa il tuo template Word). Se non disponibile, il PDF viene generato automaticamente con Python (senza dipendenze esterne). Su Synology: *Package Center → LibreOffice*. |
 | **Git** | Su Synology: *Package Center → Git Server* oppure tramite `opkg` |
 | **Node.js + npm** | Per pm2. Su Synology: *Package Center → Node.js* |
 | **pm2** | Process manager: `npm install -g pm2` |
+| **Chiave API Cloudmersive** | Registrati su [cloudmersive.com](https://cloudmersive.com/) per ottenere una chiave gratuita (750 conversioni/mese incluse) |
 ---
 
 ## Primo avvio (installazione)
@@ -52,12 +52,9 @@ EMAIL_BODY=In allegato la richiesta di congedo/permesso di {NOME_COGNOME}.
 # Su Synology usa es. /volume1/permessi
 OUTPUT_DIR=./output
 
-# (Opzionale) Percorso assoluto di soffice/libreoffice se non trovato automaticamente.
-# Utile su Synology quando l'eseguibile non è nel PATH del processo.
-# Esempi:
-#   SOFFICE_PATH=/var/packages/LibreOffice/target/usr/bin/soffice   ← Package Center DSM 6/7
-#   SOFFICE_PATH=/opt/bin/soffice                                   ← Entware/opkg
-# SOFFICE_PATH=
+# Chiave API Cloudmersive per la conversione DOCX → PDF
+# Ottieni la tua chiave gratuita su https://cloudmersive.com/
+CLOUDMERSIVE_API_KEY=la_tua_chiave_api
 ```
 
 ---
@@ -102,39 +99,20 @@ venv/bin/gunicorn --bind 0.0.0.0:3002 --workers 2 run:app
 
 ## Generazione PDF
 
-Il PDF viene sempre prodotto, anche senza LibreOffice:
+Il flusso di generazione è:
 
-| Situazione | Come viene generato il PDF |
-|------------|---------------------------|
-| LibreOffice installato e trovato | Conversione da DOCX → PDF tramite LibreOffice (massima fedeltà al template Word) |
-| LibreOffice assente (es. NAS che non lo supporta) | Generazione diretta in Python con `fpdf2` (puro Python, nessuna dipendenza esterna) |
+1. Il template Word (`permesso_template.docx`) viene compilato con i dati del dipendente tramite `docxtpl`.
+2. Il file DOCX compilato viene inviato all'API [Cloudmersive Convert](https://cloudmersive.com/convert-api) per la conversione in PDF.
+3. Entrambi i file (DOCX e PDF) vengono salvati nella cartella `OUTPUT_DIR`.
+4. Il PDF viene allegato e inviato via email.
 
-### LibreOffice opzionale: migliorare la fedeltà del PDF
-
-Se vuoi che il PDF corrisponda esattamente al tuo template Word, installa LibreOffice. Su Synology l'eseguibile si trova spesso fuori dal `PATH` del processo; l'app lo cerca automaticamente nei percorsi comuni:
-
-| Metodo di installazione | Percorso tipico |
-|-------------------------|-----------------|
-| Package Center (DSM 6/7) | `/var/packages/LibreOffice/target/usr/bin/soffice` |
-| Entware / opkg | `/opt/bin/soffice` |
-
-Se l'app non lo trova, puoi indicarlo esplicitamente nel file `.env`:
-
-```env
-SOFFICE_PATH=/var/packages/LibreOffice/target/usr/bin/soffice
-```
-
-Per trovare il percorso corretto sul tuo NAS, esegui da SSH:
-
-```bash
-find / -name "soffice" -type f 2>/dev/null
-```
+> La conversione tramite Cloudmersive garantisce la massima fedeltà al template Word originale, senza necessità di installare LibreOffice sul NAS.
 
 ---
 
 ## Template Word
 
-Il file `template/permesso_template.docx` è fornito direttamente dall'utente e rimane fisso nel repository.  
+Il file `permesso_template.docx` è fornito direttamente dall'utente e rimane fisso nel repository.  
 Assicurati che contenga i segnaposto Jinja2 elencati di seguito.
 
 ### Segnaposto del template

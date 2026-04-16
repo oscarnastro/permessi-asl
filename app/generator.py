@@ -1,21 +1,16 @@
-import base64
 import os
 from datetime import date, datetime
 
-import jinja2
-import weasyprint
+import requests
+from docxtpl import DocxTemplate
 
-_PDF_CHECKED = "[X]"
-_PDF_UNCHECKED = "[ ]"
+_DOCX_CHECKED = "☒"
+_DOCX_UNCHECKED = "○"
 
-_STATIC_DIR = os.path.join(os.path.dirname(__file__), "..", "static", "img")
+_TEMPLATE_PATH = os.path.join(os.path.dirname(__file__), "..", "permesso_template.docx")
 
-
-def _load_image_b64(filename: str) -> str:
-    """Read an image from static/img and return its base64-encoded content."""
-    path = os.path.join(_STATIC_DIR, filename)
-    with open(path, "rb") as f:
-        return base64.b64encode(f.read()).decode()
+_CLOUDMERSIVE_URL = "https://api.cloudmersive.com/convert/word/docx/to/pdf"
+_DOCX_MIME = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
 
 
 def _fmt_date(d):
@@ -42,38 +37,52 @@ def generate_documents(tipo_permesso: str, data_dal, data_al, output_dir: str):
         "MATRICOLA": os.environ.get("MATRICOLA", "___"),
         "SERVIZIO": os.environ.get("SERVIZIO", "___"),
         "DATA_CREAZIONE": date.today().strftime("%d/%m/%Y"),
-        "logo_b64": _load_image_b64("logo_asl.jpeg"),
-        "firma_b64": _load_image_b64("firma_direttore.png"),
     }
 
     for t in types:
         if t == tipo_permesso:
-            context[f"sel_{t}"] = _PDF_CHECKED
+            context[f"sel_{t}"] = _DOCX_CHECKED
             context[f"giorni_{t}"] = str(_calc_days(data_dal, data_al))
             context[f"data_dal_{t}"] = _fmt_date(data_dal)
             context[f"data_al_{t}"] = _fmt_date(data_al)
         else:
-            context[f"sel_{t}"] = _PDF_UNCHECKED
+            context[f"sel_{t}"] = _DOCX_UNCHECKED
             context[f"giorni_{t}"] = "___"
             context[f"data_dal_{t}"] = "___"
             context[f"data_al_{t}"] = "___"
 
     cognome = os.environ.get("NOME_COGNOME", "DIPENDENTE").replace(" ", "_")
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    docx_path = os.path.join(output_dir, f"permesso_{cognome}_{timestamp}.docx")
     pdf_path = os.path.join(output_dir, f"permesso_{cognome}_{timestamp}.pdf")
 
-    _generate_pdf_from_html(context, pdf_path)
+    _fill_docx_template(context, docx_path)
+    _convert_docx_to_pdf_cloudmersive(docx_path, pdf_path)
     return pdf_path
 
 
-def _generate_pdf_from_html(context: dict, pdf_path: str) -> None:
-    """Generate a PDF by rendering the Jinja2 HTML template and converting with WeasyPrint."""
-    templates_dir = os.path.join(os.path.dirname(__file__), "..", "templates")
-    env = jinja2.Environment(
-        loader=jinja2.FileSystemLoader(os.path.abspath(templates_dir)),
-        autoescape=jinja2.select_autoescape(["html"]),
-    )
-    template = env.get_template("permesso_pdf.html")
-    html_content = template.render(**context)
+def _fill_docx_template(context: dict, docx_path: str) -> None:
+    """Fill the DOCX template with the given context and save to docx_path."""
+    tpl = DocxTemplate(os.path.realpath(_TEMPLATE_PATH))
+    tpl.render(context)
+    tpl.save(docx_path)
 
-    weasyprint.HTML(string=html_content).write_pdf(pdf_path)
+
+def _convert_docx_to_pdf_cloudmersive(docx_path: str, pdf_path: str) -> None:
+    """Convert a DOCX file to PDF using the Cloudmersive Convert API."""
+    api_key = os.environ.get("CLOUDMERSIVE_API_KEY", "")
+    if not api_key:
+        raise ValueError("CLOUDMERSIVE_API_KEY environment variable non configurata")
+
+    with open(docx_path, "rb") as f:
+        response = requests.post(
+            _CLOUDMERSIVE_URL,
+            headers={"Apikey": api_key},
+            files={"inputFile": (os.path.basename(docx_path), f, _DOCX_MIME)},
+            timeout=60,
+        )
+
+    response.raise_for_status()
+
+    with open(pdf_path, "wb") as f:
+        f.write(response.content)
