@@ -1,43 +1,43 @@
 # Permessi ASL
 
-Applicativo web per generare richieste di congedo/permesso in formato **Word** e **PDF**, con invio automatico via email.
+A web application to generate leave/permission requests in **Word** and **PDF** format, with automatic email delivery.
 
 ---
 
-## Requisiti sul NAS
+## NAS Requirements
 
-| Requisito | Note |
-|-----------|------|
-| **Python 3.9+** | Su Synology: installa da *Package Center → Python 3* |
-| **Git** | Su Synology: *Package Center → Git Server* oppure tramite `opkg` |
-| **Node.js + npm** | Per pm2. Su Synology: *Package Center → Node.js* |
+| Requirement | Notes |
+|-------------|-------|
+| **Python 3.9+** | On Synology: install from *Package Center → Python 3* |
+| **Git** | On Synology: *Package Center → Git Server* or via `opkg` |
+| **Node.js + npm** | Required for pm2. On Synology: *Package Center → Node.js* |
 | **pm2** | Process manager: `npm install -g pm2` |
-| **Chiave API Cloudmersive** | Registrati su [cloudmersive.com](https://cloudmersive.com/) per ottenere una chiave gratuita (750 conversioni/mese incluse) |
+| **Cloudmersive API Key** | Sign up at [cloudmersive.com](https://cloudmersive.com/) to get a free key (750 conversions/month included) |
 ---
 
-## Primo avvio (installazione)
+## First Start (Installation)
 
 ```bash
-# 1. Clona il repository sul NAS
+# 1. Clone the repository on the NAS
 git clone https://github.com/oscarnastro/permessi-asl.git
 cd permessi-asl
 
-# 2. Esegui lo script di setup (crea virtualenv, installa dipendenze, genera template, avvia con pm2)
+# 2. Run the setup script (creates virtualenv, installs dependencies, generates template, starts with pm2)
 bash setup.sh
 
-# 3. Modifica il file .env con i tuoi dati
+# 3. Edit the .env file with your details
 nano .env
 ```
 
-### Configurazione `.env`
+### `.env` Configuration
 
 ```env
-# Dati dipendente (precompilano il documento)
+# Employee data (pre-fills the document)
 NOME_COGNOME=ALFANO GIUSEPPINA
 MATRICOLA=891620
 SERVIZIO=UOC Controllo di Gestione
 
-# SMTP per invio email
+# SMTP for email sending
 SMTP_HOST=smtp.example.com
 SMTP_PORT=587
 SMTP_USE_TLS=true
@@ -48,47 +48,47 @@ EMAIL_TO=responsabile@example.com
 EMAIL_SUBJECT=Richiesta di Congedo/Permesso - {NOME_COGNOME}
 EMAIL_BODY=In allegato la richiesta di congedo/permesso di {NOME_COGNOME}.
 
-# Cartella di output (dove salvare DOCX e PDF)
-# Su Synology usa es. /volume1/permessi
+# Output folder (where to save DOCX and PDF files)
+# On Synology use e.g. /volume1/permessi
 OUTPUT_DIR=./output
 
-# Chiave API Cloudmersive per la conversione DOCX → PDF
-# Ottieni la tua chiave gratuita su https://cloudmersive.com/
-CLOUDMERSIVE_API_KEY=la_tua_chiave_api
+# Cloudmersive API key for DOCX → PDF conversion
+# Get your free key at https://cloudmersive.com/
+CLOUDMERSIVE_API_KEY=your_api_key_here
 ```
 
 ---
 
-## Avvio con pm2
+## Starting with pm2
 
 ```bash
 cd permessi-asl
 
-# Avvia (o riavvia) tramite il file ecosystem
+# Start (or restart) using the ecosystem file
 pm2 start ecosystem.config.js
 
-# Salva la lista dei processi (sopravvive al reboot)
+# Save the process list (survives reboots)
 pm2 save
 
-# Abilita pm2 all'avvio automatico del sistema (segui le istruzioni mostrate)
+# Enable pm2 to start automatically at system boot (follow the displayed instructions)
 pm2 startup
 ```
 
-L'app sarà raggiungibile su `http://<IP-NAS>:3002`.
+The app will be accessible at `http://<NAS-IP>:3002`.
 
-### Comandi utili pm2
+### Useful pm2 Commands
 
 ```bash
-pm2 status                  # stato dei processi
-pm2 logs permessi-asl       # log in tempo reale
-pm2 restart permessi-asl    # riavvio
+pm2 status                  # process status
+pm2 logs permessi-asl       # real-time logs
+pm2 restart permessi-asl    # restart
 pm2 stop permessi-asl       # stop
-pm2 delete permessi-asl     # rimozione dal registro pm2
+pm2 delete permessi-asl     # remove from pm2 registry
 ```
 
 ---
 
-## Avvio manuale (senza pm2)
+## Manual Start (without pm2)
 
 ```bash
 cd permessi-asl
@@ -97,55 +97,55 @@ venv/bin/gunicorn --bind 0.0.0.0:3002 --workers 2 run:app
 
 ---
 
-## Generazione PDF
+## PDF Generation
 
-Il flusso di generazione è:
+The generation flow is:
 
-1. Il template Word (`permesso_template.docx`) viene compilato con i dati del dipendente tramite `docxtpl`.
-2. Il file DOCX compilato viene inviato all'API [Cloudmersive Convert](https://cloudmersive.com/convert-api) per la conversione in PDF.
-3. Entrambi i file (DOCX e PDF) vengono salvati nella cartella `OUTPUT_DIR`.
-4. Il PDF viene allegato e inviato via email.
+1. The Word template (`permesso_template.docx`) is filled with employee data via `docxtpl`.
+2. The compiled DOCX file is sent to the [Cloudmersive Convert](https://cloudmersive.com/convert-api) API for PDF conversion.
+3. Both files (DOCX and PDF) are saved in the `OUTPUT_DIR` folder.
+4. The PDF is attached and sent via email.
 
-> La conversione tramite Cloudmersive garantisce la massima fedeltà al template Word originale, senza necessità di installare LibreOffice sul NAS.
+> Conversion via Cloudmersive ensures maximum fidelity to the original Word template, with no need to install LibreOffice on the NAS.
 
 ---
 
-## Template Word
+## Word Template
 
-Il file `permesso_template.docx` è fornito direttamente dall'utente e rimane fisso nel repository.  
-Assicurati che contenga i segnaposto Jinja2 elencati di seguito.
+The `permesso_template.docx` file is provided directly by the user and remains fixed in the repository.  
+Make sure it contains the Jinja2 placeholders listed below.
 
-### Segnaposto del template
+### Template Placeholders
 
-| Segnaposto | Descrizione |
-|------------|-------------|
-| `{{ NOME_COGNOME }}` | Nome e cognome del dipendente (da `.env`) |
-| `{{ MATRICOLA }}` | Matricola (da `.env`) |
-| `{{ SERVIZIO }}` | Unità organizzativa (da `.env`) |
-| `{{ DATA_CREAZIONE }}` | Data di generazione del documento (gg/mm/aaaa) |
-| `{{ sel_congedo }}` | Segno di spunta (☒ se selezionato, ○ altrimenti) |
-| `{{ giorni_congedo }}` | Numero di giorni calcolato automaticamente |
-| `{{ data_dal_congedo }}` | Data inizio (gg/mm/aaaa) |
-| `{{ data_al_congedo }}` | Data fine (gg/mm/aaaa) |
-| `{{ sel_festivita }}` | Segno di spunta |
-| `{{ giorni_festivita }}` | Numero di giorni |
-| `{{ data_dal_festivita }}` | Data inizio |
-| `{{ data_al_festivita }}` | Data fine |
-| `{{ sel_104 }}` | Segno di spunta |
-| `{{ giorni_104 }}` | Numero di giorni |
-| `{{ data_dal_104 }}` | Data inizio |
-| `{{ data_al_104 }}` | Data fine |
-| `{{ sel_legge }}` | Segno di spunta |
-| `{{ giorni_legge }}` | Numero di giorni |
-| `{{ data_dal_legge }}` | Data inizio |
-| `{{ data_al_legge }}` | Data fine |
-| `{{ sel_altro }}` | Segno di spunta |
-| `{{ giorni_altro }}` | Numero di giorni |
-| `{{ data_dal_altro }}` | Data inizio |
-| `{{ data_al_altro }}` | Data fine |
+| Placeholder | Description |
+|-------------|-------------|
+| `{{ NOME_COGNOME }}` | Employee full name (from `.env`) |
+| `{{ MATRICOLA }}` | Employee ID number (from `.env`) |
+| `{{ SERVIZIO }}` | Organisational unit (from `.env`) |
+| `{{ DATA_CREAZIONE }}` | Document generation date (dd/mm/yyyy) |
+| `{{ sel_congedo }}` | Checkbox (☒ if selected, ○ otherwise) |
+| `{{ giorni_congedo }}` | Number of days calculated automatically |
+| `{{ data_dal_congedo }}` | Start date (dd/mm/yyyy) |
+| `{{ data_al_congedo }}` | End date (dd/mm/yyyy) |
+| `{{ sel_festivita }}` | Checkbox |
+| `{{ giorni_festivita }}` | Number of days |
+| `{{ data_dal_festivita }}` | Start date |
+| `{{ data_al_festivita }}` | End date |
+| `{{ sel_104 }}` | Checkbox |
+| `{{ giorni_104 }}` | Number of days |
+| `{{ data_dal_104 }}` | Start date |
+| `{{ data_al_104 }}` | End date |
+| `{{ sel_legge }}` | Checkbox |
+| `{{ giorni_legge }}` | Number of days |
+| `{{ data_dal_legge }}` | Start date |
+| `{{ data_al_legge }}` | End date |
+| `{{ sel_altro }}` | Checkbox |
+| `{{ giorni_altro }}` | Number of days |
+| `{{ data_dal_altro }}` | Start date |
+| `{{ data_al_altro }}` | End date |
 
-> **Come funzionano i segnaposto `sel_`**  
-> Quando l'utente seleziona un tipo di permesso (es. *Congedo ordinario*), il corrispondente `{{ sel_congedo }}` viene sostituito con il carattere **☒** (X nel quadrato).  
-> Tutti gli altri `sel_` vengono sostituiti con **○** (casella vuota).  
-> In questo modo il documento Word/PDF risultante mostra esattamente la casella barrata come nel modulo originale.
+> **How `sel_` placeholders work**  
+> When the user selects a leave type (e.g. *Ordinary leave*), the corresponding `{{ sel_congedo }}` is replaced with the **☒** character (X in a box).  
+> All other `sel_` placeholders are replaced with **○** (empty box).  
+> This way the resulting Word/PDF document shows exactly the ticked box as in the original form.
 
