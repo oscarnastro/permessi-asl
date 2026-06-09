@@ -40,7 +40,7 @@ def _format_intervalli_single_field(intervalli):
     if not intervalli:
         return "___"
     return " / ".join(
-        f"{_fmt_date(item['data_dal'])} - {_fmt_date(item['data_al'])}"
+        f"dal {_fmt_date(item['data_dal'])} al {_fmt_date(item['data_al'])}"
         for item in intervalli
     )
 
