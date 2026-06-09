@@ -1,9 +1,8 @@
 import os
 from datetime import date, datetime
 
-import cloudmersive_convert_api_client
-from cloudmersive_convert_api_client.rest import ApiException
 from docxtpl import DocxTemplate
+import requests
 
 _DOCX_CHECKED = "☒"
 _DOCX_UNCHECKED = "○"
@@ -82,21 +81,33 @@ def _fill_docx_template(context: dict, docx_path: str) -> None:
 
 
 def _convert_docx_to_pdf_cloudmersive(docx_path: str, pdf_path: str) -> None:
-    """Convert a DOCX file to PDF using the Cloudmersive Convert API SDK."""
+    """Convert a DOCX file to PDF using the Cloudmersive Convert API."""
     api_key = os.environ.get("CLOUDMERSIVE_API_KEY", "")
     if not api_key:
         raise ValueError("CLOUDMERSIVE_API_KEY environment variable non configurata")
 
-    configuration = cloudmersive_convert_api_client.Configuration()
-    configuration.api_key["Apikey"] = api_key
-    api_instance = cloudmersive_convert_api_client.ConvertDocumentApi(
-        cloudmersive_convert_api_client.ApiClient(configuration)
-    )
-
     try:
-        pdf_data = api_instance.convert_document_docx_to_pdf(docx_path)
-    except ApiException as e:
-        raise RuntimeError(f"Errore nella conversione DOCX -> PDF: {e}") from e
+        with open(docx_path, "rb") as source_file:
+            response = requests.post(
+                "https://api.cloudmersive.com/convert/docx/to/pdf",
+                headers={"Apikey": api_key},
+                files={
+                    "inputFile": (
+                        os.path.basename(docx_path),
+                        source_file,
+                        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                    )
+                },
+                timeout=60,
+            )
+    except requests.RequestException as exc:
+        raise RuntimeError(f"Errore di rete nella conversione DOCX -> PDF: {exc}") from exc
+
+    if not response.ok:
+        raise RuntimeError(
+            "Errore nella conversione DOCX -> PDF: "
+            f"status={response.status_code}, body={response.text[:500]}"
+        )
 
     with open(pdf_path, "wb") as f:
-        f.write(pdf_data)
+        f.write(response.content)
