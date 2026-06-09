@@ -31,9 +31,15 @@ def _calc_total_days(intervalli):
 def _format_intervalli_per_document(intervalli):
     if not intervalli:
         return "___", "___"
-    data_dal_values = " / ".join(_fmt_date(item["data_dal"]) for item in intervalli)
-    data_al_values = " / ".join(_fmt_date(item["data_al"]) for item in intervalli)
+    data_dal_values = ", ".join(_fmt_date(item["data_dal"]) for item in intervalli)
+    data_al_values = ", ".join(_fmt_date(item["data_al"]) for item in intervalli)
     return data_dal_values, data_al_values
+
+
+def _format_single_interval(item):
+    if item["data_dal"] == item["data_al"]:
+        return _fmt_date(item["data_dal"])
+    return f"{_fmt_date(item['data_dal'])} - {_fmt_date(item['data_al'])}"
 
 
 def _format_intervalli_single_field(intervalli):
