@@ -45,7 +45,7 @@ def _format_single_interval(item):
 def _format_intervalli_single_field(intervalli):
     if not intervalli:
         return "___"
-   return ", ".join(_format_single_interval(item) for item in intervalli)
+    return ", ".join(_format_single_interval(item) for item in intervalli)
 
 
 def generate_documents(tipo_permesso: str, intervalli, output_dir: str):
