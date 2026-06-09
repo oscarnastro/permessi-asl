@@ -23,7 +23,21 @@ def _calc_days(data_dal, data_al):
     return (data_al - data_dal).days + 1
 
 
-def generate_documents(tipo_permesso: str, data_dal, data_al, output_dir: str):
+def _calc_total_days(intervalli):
+    if not intervalli:
+        return "___"
+    return sum(_calc_days(item["data_dal"], item["data_al"]) for item in intervalli)
+
+
+def _format_intervalli_per_document(intervalli):
+    if not intervalli:
+        return "___", "___"
+    data_dal_values = " / ".join(_fmt_date(item["data_dal"]) for item in intervalli)
+    data_al_values = " / ".join(_fmt_date(item["data_al"]) for item in intervalli)
+    return data_dal_values, data_al_values
+
+
+def generate_documents(tipo_permesso: str, intervalli, output_dir: str):
     # Resolve and validate output_dir to prevent path traversal
     output_dir = os.path.realpath(output_dir)
     os.makedirs(output_dir, exist_ok=True)
@@ -39,10 +53,11 @@ def generate_documents(tipo_permesso: str, data_dal, data_al, output_dir: str):
 
     for t in types:
         if t == tipo_permesso:
+            data_dal_value, data_al_value = _format_intervalli_per_document(intervalli)
             context[f"sel_{t}"] = _DOCX_CHECKED
-            context[f"giorni_{t}"] = str(_calc_days(data_dal, data_al))
-            context[f"data_dal_{t}"] = _fmt_date(data_dal)
-            context[f"data_al_{t}"] = _fmt_date(data_al)
+            context[f"giorni_{t}"] = str(_calc_total_days(intervalli))
+            context[f"data_dal_{t}"] = data_dal_value
+            context[f"data_al_{t}"] = data_al_value
         else:
             context[f"sel_{t}"] = _DOCX_UNCHECKED
             context[f"giorni_{t}"] = "___"

@@ -192,45 +192,131 @@
           </div>
         </fieldset>
 
-        <!-- Date range -->
+        <!-- Date ranges -->
         <div class="mb-8">
-          <h2 class="text-lg font-semibold text-gray-800 mb-4">Periodo richiesto</h2>
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-semibold text-gray-800">Periodi richiesti</h2>
+            <button type="button" id="add-interval-btn"
+                    class="text-sm px-3 py-1.5 rounded-lg border border-indigo-200 text-indigo-700 bg-indigo-50 hover:bg-indigo-100 transition-colors">
+              + Aggiungi intervallo
+            </button>
+          </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <!-- Dal -->
-            <div>
-              <duet-date-picker
-                identifier="data_dal"
-                name="data_dal"
-                label="Dal"
-                required
-                aria-describedby="dal-error"
-              ></duet-date-picker>
-              <div id="dal-error" role="alert" class="hidden text-red-600 text-xs mt-1 flex items-center gap-1">
-                <svg class="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                </svg>
-                <span id="dal-error-msg"></span>
+          <div id="intervalli-container" class="space-y-4">
+            <div class="interval-row p-4 rounded-xl border border-gray-200 bg-gray-50" data-index="1">
+              <div class="flex items-center justify-between mb-3">
+                <h3 class="font-medium text-gray-700">Intervallo 1</h3>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <duet-date-picker
+                    identifier="data_dal_1"
+                    name="data_dal_1"
+                    label="Dal"
+                    required
+                    aria-describedby="dal-error-1"
+                  ></duet-date-picker>
+                  <div id="dal-error-1" role="alert" class="hidden text-red-600 text-xs mt-1 flex items-center gap-1">
+                    <svg class="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                      <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                    </svg>
+                    <span id="dal-error-msg-1"></span>
+                  </div>
+                </div>
+                <div>
+                  <duet-date-picker
+                    identifier="data_al_1"
+                    name="data_al_1"
+                    label="Al"
+                    required
+                    aria-describedby="al-error-1"
+                  ></duet-date-picker>
+                  <div id="al-error-1" role="alert" class="hidden text-red-600 text-xs mt-1 flex items-center gap-1">
+                    <svg class="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                      <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                    </svg>
+                    <span id="al-error-msg-1"></span>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <!-- Al -->
-            <div>
-              <duet-date-picker
-                identifier="data_al"
-                name="data_al"
-                label="Al"
-                required
-                aria-describedby="al-error"
-              ></duet-date-picker>
-              <div id="al-error" role="alert" class="hidden text-red-600 text-xs mt-1 flex items-center gap-1">
-                <svg class="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                </svg>
-                <span id="al-error-msg"></span>
+            <div class="interval-row p-4 rounded-xl border border-gray-200 bg-gray-50 hidden" data-index="2">
+              <div class="flex items-center justify-between mb-3">
+                <h3 class="font-medium text-gray-700">Intervallo 2</h3>
+                <button type="button" class="remove-interval-btn text-xs text-red-600 hover:text-red-700">Rimuovi</button>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <duet-date-picker
+                    identifier="data_dal_2"
+                    name="data_dal_2"
+                    label="Dal"
+                    aria-describedby="dal-error-2"
+                  ></duet-date-picker>
+                  <div id="dal-error-2" role="alert" class="hidden text-red-600 text-xs mt-1 flex items-center gap-1">
+                    <svg class="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                      <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                    </svg>
+                    <span id="dal-error-msg-2"></span>
+                  </div>
+                </div>
+                <div>
+                  <duet-date-picker
+                    identifier="data_al_2"
+                    name="data_al_2"
+                    label="Al"
+                    aria-describedby="al-error-2"
+                  ></duet-date-picker>
+                  <div id="al-error-2" role="alert" class="hidden text-red-600 text-xs mt-1 flex items-center gap-1">
+                    <svg class="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                      <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                    </svg>
+                    <span id="al-error-msg-2"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="interval-row p-4 rounded-xl border border-gray-200 bg-gray-50 hidden" data-index="3">
+              <div class="flex items-center justify-between mb-3">
+                <h3 class="font-medium text-gray-700">Intervallo 3</h3>
+                <button type="button" class="remove-interval-btn text-xs text-red-600 hover:text-red-700">Rimuovi</button>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <duet-date-picker
+                    identifier="data_dal_3"
+                    name="data_dal_3"
+                    label="Dal"
+                    aria-describedby="dal-error-3"
+                  ></duet-date-picker>
+                  <div id="dal-error-3" role="alert" class="hidden text-red-600 text-xs mt-1 flex items-center gap-1">
+                    <svg class="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                      <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                    </svg>
+                    <span id="dal-error-msg-3"></span>
+                  </div>
+                </div>
+                <div>
+                  <duet-date-picker
+                    identifier="data_al_3"
+                    name="data_al_3"
+                    label="Al"
+                    aria-describedby="al-error-3"
+                  ></duet-date-picker>
+                  <div id="al-error-3" role="alert" class="hidden text-red-600 text-xs mt-1 flex items-center gap-1">
+                    <svg class="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                      <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                    </svg>
+                    <span id="al-error-msg-3"></span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+
+          <p class="text-xs text-gray-500 mt-2">Puoi inserire massimo 3 intervalli.</p>
 
           <!-- Giorni calcolati -->
           <div id="giorni-display" class="hidden mt-4 p-3 bg-green-50 rounded-xl border border-green-200 text-green-800 text-sm font-medium text-center">
@@ -264,6 +350,8 @@
     const form = document.getElementById('permesso-form');
     const giorni = document.getElementById('giorni-display');
     const giorniCount = document.getElementById('giorni-count');
+    const addIntervalBtn = document.getElementById('add-interval-btn');
+    const intervalRows = Array.from(document.querySelectorAll('.interval-row'));
     const submitBtn = document.getElementById('submit-btn');
     const btnText = document.getElementById('btn-text');
     const btnIcon = document.getElementById('btn-icon');
@@ -271,10 +359,6 @@
     const alertBox = document.getElementById('alert-box');
     const alertInner = document.getElementById('alert-inner');
     const liveRegion = document.getElementById('live-region');
-
-    // ISO date values kept in sync via duetChange events
-    let dataDalValue = '';
-    let dataAlValue = '';
 
     // Italian localization for Duet Date Picker
     const itLocalization = {
@@ -349,31 +433,41 @@
         activateFallbackInputs();
         return;
       }
-      const pickerDal = document.querySelector('duet-date-picker[identifier="data_dal"]');
-      const pickerAl  = document.querySelector('duet-date-picker[identifier="data_al"]');
-      if (pickerDal) {
-        pickerDal.localization = itLocalization;
-        pickerDal.addEventListener('duetChange', (e) => {
-          dataDalValue = e.detail.value || '';
-          clearFieldError('dal');
+      document.querySelectorAll('duet-date-picker').forEach(picker => {
+        picker.localization = itLocalization;
+        picker.addEventListener('duetChange', () => {
+          const parts = picker.getAttribute('identifier').split('_');
+          const kind = parts[1];
+          const idx = Number(parts[2]);
+          clearFieldError(kind, idx);
           calcGiorni();
         });
-      }
-      if (pickerAl) {
-        pickerAl.localization = itLocalization;
-        pickerAl.addEventListener('duetChange', (e) => {
-          dataAlValue = e.detail.value || '';
-          clearFieldError('al');
-          calcGiorni();
-        });
-      }
+      });
     });
+
+    function getVisibleRows() {
+      return intervalRows.filter(row => !row.classList.contains('hidden'));
+    }
+
+    function getDateValue(kind, idx) {
+      const picker = document.querySelector(`duet-date-picker[identifier="data_${kind}_${idx}"]`);
+      if (picker) return picker.value || '';
+      const input = document.getElementById(`data_${kind}_${idx}`);
+      return input ? input.value : '';
+    }
+
+    function setDateValue(kind, idx, value) {
+      const picker = document.querySelector(`duet-date-picker[identifier="data_${kind}_${idx}"]`);
+      if (picker) picker.value = value;
+      const input = document.getElementById(`data_${kind}_${idx}`);
+      if (input) input.value = value;
+    }
 
     function activateFallbackInputs() {
       document.querySelectorAll('duet-date-picker').forEach(picker => {
         const id    = picker.getAttribute('identifier');
         const label = picker.getAttribute('label') || id;
-        const errId = id === 'data_dal' ? 'dal-error' : 'al-error';
+        const errId = `${id.split('_')[1]}-error-${id.split('_')[2]}`;
 
         // Build label element safely (no innerHTML) to avoid XSS
         const labelEl = document.createElement('label');
@@ -393,25 +487,14 @@
         input.setAttribute('aria-required', 'true');
         input.setAttribute('aria-describedby', errId);
         input.className = 'w-full px-4 py-2.5 rounded-xl border-2 border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all text-gray-800';
+        input.addEventListener('change', () => {
+          const parts = id.split('_');
+          clearFieldError(parts[1], Number(parts[2]));
+          calcGiorni();
+        });
 
         picker.replaceWith(labelEl, input);
       });
-      const fallbackDal = document.getElementById('data_dal');
-      const fallbackAl  = document.getElementById('data_al');
-      if (fallbackDal) {
-        fallbackDal.addEventListener('change', () => {
-          dataDalValue = fallbackDal.value;
-          calcGiorni();
-          clearFieldError('dal');
-        });
-      }
-      if (fallbackAl) {
-        fallbackAl.addEventListener('change', () => {
-          dataAlValue = fallbackAl.value;
-          calcGiorni();
-          clearFieldError('al');
-        });
-      }
     }
 
     function getSelectedTipo() {
@@ -428,35 +511,88 @@
     }
 
     function calcGiorni() {
-      if (dataDalValue && dataAlValue) {
-        const d1 = new Date(dataDalValue);
-        const d2 = new Date(dataAlValue);
-        const diff = Math.round((d2 - d1) / 86400000) + 1;
-        if (diff > 0) {
-          giorniCount.textContent = diff;
-          giorni.classList.remove('hidden');
-          return;
+      let total = 0;
+      for (const row of getVisibleRows()) {
+        const idx = Number(row.dataset.index);
+        const dataDalValue = getDateValue('dal', idx);
+        const dataAlValue = getDateValue('al', idx);
+        if (dataDalValue && dataAlValue) {
+          const d1 = new Date(dataDalValue);
+          const d2 = new Date(dataAlValue);
+          const diff = Math.round((d2 - d1) / 86400000) + 1;
+          if (diff > 0) total += diff;
         }
       }
-      giorni.classList.add('hidden');
+      if (total > 0) {
+        giorniCount.textContent = total;
+        giorni.classList.remove('hidden');
+      } else {
+        giorni.classList.add('hidden');
+      }
     }
 
-    function showFieldError(fieldId, msg) {
-      const errDiv = document.getElementById(fieldId + '-error');
-      const errMsg = document.getElementById(fieldId + '-error-msg');
+    function showFieldError(fieldId, idx, msg) {
+      const errDiv = document.getElementById(`${fieldId}-error-${idx}`);
+      const errMsg = document.getElementById(`${fieldId}-error-msg-${idx}`);
       if (errDiv && errMsg) {
         errMsg.textContent = msg;
         errDiv.classList.remove('hidden');
       }
     }
 
-    function clearFieldError(fieldId) {
-      const errDiv = document.getElementById(fieldId + '-error');
+    function clearFieldError(fieldId, idx) {
+      const errDiv = document.getElementById(`${fieldId}-error-${idx}`);
+      if (errDiv) errDiv.classList.add('hidden');
+    }
+
+    function clearTipoError() {
+      const errDiv = document.getElementById('tipo-error');
       if (errDiv) errDiv.classList.add('hidden');
     }
 
     function clearAllErrors() {
-      ['tipo', 'dal', 'al'].forEach(clearFieldError);
+      clearTipoError();
+      [1, 2, 3].forEach(idx => {
+        clearFieldError('dal', idx);
+        clearFieldError('al', idx);
+      });
+    }
+
+    function showTipoError(msg) {
+      const errDiv = document.getElementById('tipo-error');
+      const errMsg = document.getElementById('tipo-error-msg');
+      if (errDiv && errMsg) {
+        errMsg.textContent = msg;
+        errDiv.classList.remove('hidden');
+      }
+    }
+
+    function updateIntervalButtons() {
+      addIntervalBtn.disabled = getVisibleRows().length >= 3;
+      addIntervalBtn.classList.toggle('opacity-50', addIntervalBtn.disabled);
+      addIntervalBtn.classList.toggle('cursor-not-allowed', addIntervalBtn.disabled);
+    }
+
+    function addInterval() {
+      const next = intervalRows.find(row => row.classList.contains('hidden'));
+      if (!next) return;
+      next.classList.remove('hidden');
+      updateIntervalButtons();
+    }
+
+    function resetHiddenInterval(idx) {
+      setDateValue('dal', idx, '');
+      setDateValue('al', idx, '');
+      clearFieldError('dal', idx);
+      clearFieldError('al', idx);
+    }
+
+    function removeInterval(row) {
+      const idx = Number(row.dataset.index);
+      row.classList.add('hidden');
+      resetHiddenInterval(idx);
+      calcGiorni();
+      updateIntervalButtons();
     }
 
     function showAlert(ok, message) {
@@ -485,21 +621,27 @@
       let valid = true;
 
       if (!tipo) {
-        showFieldError('tipo', 'Seleziona il tipo di permesso.');
+        showTipoError('Seleziona il tipo di permesso.');
         valid = false;
       }
 
-      if (!dataDalValue) {
-        showFieldError('dal', 'La data di inizio è obbligatoria.');
-        valid = false;
-      }
-      if (!dataAlValue) {
-        showFieldError('al', 'La data di fine è obbligatoria.');
-        valid = false;
-      }
-      if (dataDalValue && dataAlValue && dataAlValue < dataDalValue) {
-        showFieldError('al', 'La data di fine deve essere uguale o successiva alla data di inizio.');
-        valid = false;
+      for (const row of getVisibleRows()) {
+        const idx = Number(row.dataset.index);
+        const dataDalValue = getDateValue('dal', idx);
+        const dataAlValue = getDateValue('al', idx);
+
+        if (!dataDalValue) {
+          showFieldError('dal', idx, 'La data di inizio è obbligatoria.');
+          valid = false;
+        }
+        if (!dataAlValue) {
+          showFieldError('al', idx, 'La data di fine è obbligatoria.');
+          valid = false;
+        }
+        if (dataDalValue && dataAlValue && dataAlValue < dataDalValue) {
+          showFieldError('al', idx, 'La data di fine deve essere uguale o successiva alla data di inizio.');
+          valid = false;
+        }
       }
 
       return valid;
@@ -509,7 +651,16 @@
       radio.addEventListener('change', () => {
         updateCheckDots();
         calcGiorni();
-        clearFieldError('tipo');
+        clearTipoError();
+      });
+    });
+
+    addIntervalBtn.addEventListener('click', addInterval);
+
+    document.querySelectorAll('.remove-interval-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const row = btn.closest('.interval-row');
+        if (row) removeInterval(row);
       });
     });
 
@@ -528,8 +679,13 @@
 
       const payload = {
         tipo_permesso: getSelectedTipo(),
-        data_dal: dataDalValue,
-        data_al: dataAlValue,
+        intervalli: getVisibleRows().map(row => {
+          const idx = Number(row.dataset.index);
+          return {
+            data_dal: getDateValue('dal', idx),
+            data_al: getDateValue('al', idx),
+          };
+        }),
       };
 
       try {
@@ -546,19 +702,27 @@
           updateCheckDots();
           giorni.classList.add('hidden');
           clearAllErrors();
-          // Clear Duet pickers
-          dataDalValue = '';
-          dataAlValue = '';
-          const pickerDal = document.querySelector('duet-date-picker[identifier="data_dal"]');
-          const pickerAl  = document.querySelector('duet-date-picker[identifier="data_al"]');
-          if (pickerDal) pickerDal.value = '';
-          if (pickerAl)  pickerAl.value  = '';
+          intervalRows.forEach(row => {
+            const idx = Number(row.dataset.index);
+            setDateValue('dal', idx, '');
+            setDateValue('al', idx, '');
+            if (idx > 1) row.classList.add('hidden');
+          });
+          updateIntervalButtons();
         } else {
           const errors = json.errors || {};
-          if (errors.tipo_permesso) showFieldError('tipo', errors.tipo_permesso);
-          if (errors.data_dal) showFieldError('dal', errors.data_dal);
-          if (errors.data_al) showFieldError('al', errors.data_al);
-          const msg = errors.general || 'Si è verificato un errore. Riprova.';
+          if (errors.tipo_permesso) showTipoError(errors.tipo_permesso);
+          if (errors.data_dal) showFieldError('dal', 1, errors.data_dal);
+          if (errors.data_al) showFieldError('al', 1, errors.data_al);
+          Object.entries(errors).forEach(([key, value]) => {
+            const match = key.match(/^intervallo_(\d+)_data_(dal|al)$/);
+            if (match) {
+              const idx = Number(match[1]);
+              const kind = match[2];
+              showFieldError(kind, idx, String(value));
+            }
+          });
+          const msg = errors.general || errors.intervalli || 'Si è verificato un errore. Riprova.';
           showAlert(false, msg);
         }
       } catch (err) {
@@ -567,6 +731,8 @@
         setLoading(false);
       }
     });
+
+    updateIntervalButtons();
   </script>
 
   <script>

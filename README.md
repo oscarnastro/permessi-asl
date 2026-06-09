@@ -144,8 +144,11 @@ Make sure it contains the Jinja2 placeholders listed below.
 | `{{ data_dal_altro }}` | Start date |
 | `{{ data_al_altro }}` | End date |
 
+> **Intervalli multipli (max 3)**  
+> L'app consente di inserire fino a 3 intervalli di date per una singola richiesta.  
+> Nel documento, i campi `data_dal_*` e `data_al_*` vengono valorizzati con le date dei vari intervalli separate da ` / `, mentre `giorni_*` riporta la somma totale dei giorni richiesti.
+
 > **How `sel_` placeholders work**  
 > When the user selects a leave type (e.g. *Ordinary leave*), the corresponding `{{ sel_congedo }}` is replaced with the **☒** character (X in a box).  
 > All other `sel_` placeholders are replaced with **○** (empty box).  
 > This way the resulting Word/PDF document shows exactly the ticked box as in the original form.
-
