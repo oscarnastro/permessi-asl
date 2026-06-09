@@ -127,26 +127,31 @@ Make sure it contains the Jinja2 placeholders listed below.
 | `{{ giorni_congedo }}` | Number of days calculated automatically |
 | `{{ data_dal_congedo }}` | Start date (dd/mm/yyyy) |
 | `{{ data_al_congedo }}` | End date (dd/mm/yyyy) |
+| `{{ intervalli_congedo }}` | One field with all ranges: `dd/mm/yyyy - dd/mm/yyyy` |
 | `{{ sel_festivita }}` | Checkbox |
 | `{{ giorni_festivita }}` | Number of days |
 | `{{ data_dal_festivita }}` | Start date |
 | `{{ data_al_festivita }}` | End date |
+| `{{ intervalli_festivita }}` | One field with all ranges: `dd/mm/yyyy - dd/mm/yyyy` |
 | `{{ sel_104 }}` | Checkbox |
 | `{{ giorni_104 }}` | Number of days |
 | `{{ data_dal_104 }}` | Start date |
 | `{{ data_al_104 }}` | End date |
+| `{{ intervalli_104 }}` | One field with all ranges: `dd/mm/yyyy - dd/mm/yyyy` |
 | `{{ sel_legge }}` | Checkbox |
 | `{{ giorni_legge }}` | Number of days |
 | `{{ data_dal_legge }}` | Start date |
 | `{{ data_al_legge }}` | End date |
+| `{{ intervalli_legge }}` | One field with all ranges: `dd/mm/yyyy - dd/mm/yyyy` |
 | `{{ sel_altro }}` | Checkbox |
 | `{{ giorni_altro }}` | Number of days |
 | `{{ data_dal_altro }}` | Start date |
 | `{{ data_al_altro }}` | End date |
+| `{{ intervalli_altro }}` | One field with all ranges: `dd/mm/yyyy - dd/mm/yyyy` |
 
 > **Intervalli multipli (max 3)**  
 > L'app consente di inserire fino a 3 intervalli di date per una singola richiesta.  
-> Nel documento, i campi `data_dal_*` e `data_al_*` vengono valorizzati con le date dei vari intervalli separate da ` / `, mentre `giorni_*` riporta la somma totale dei giorni richiesti.
+> Nel documento, i campi `intervalli_*` vengono valorizzati in formato `data_dal - data_al` per ogni intervallo (separati da ` / `), mentre `giorni_*` riporta la somma totale dei giorni richiesti.
 
 > **How `sel_` placeholders work**  
 > When the user selects a leave type (e.g. *Ordinary leave*), the corresponding `{{ sel_congedo }}` is replaced with the **☒** character (X in a box).  

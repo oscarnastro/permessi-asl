@@ -36,6 +36,15 @@ def _format_intervalli_per_document(intervalli):
     return data_dal_values, data_al_values
 
 
+def _format_intervalli_single_field(intervalli):
+    if not intervalli:
+        return "___"
+    return " / ".join(
+        f"{_fmt_date(item['data_dal'])} - {_fmt_date(item['data_al'])}"
+        for item in intervalli
+    )
+
+
 def generate_documents(tipo_permesso: str, intervalli, output_dir: str):
     # Resolve and validate output_dir to prevent path traversal
     output_dir = os.path.realpath(output_dir)
@@ -57,11 +66,13 @@ def generate_documents(tipo_permesso: str, intervalli, output_dir: str):
             context[f"giorni_{t}"] = str(_calc_total_days(intervalli))
             context[f"data_dal_{t}"] = data_dal_value
             context[f"data_al_{t}"] = data_al_value
+            context[f"intervalli_{t}"] = _format_intervalli_single_field(intervalli)
         else:
             context[f"sel_{t}"] = _DOCX_UNCHECKED
             context[f"giorni_{t}"] = "___"
             context[f"data_dal_{t}"] = "___"
             context[f"data_al_{t}"] = "___"
+            context[f"intervalli_{t}"] = "___"
 
     cognome = os.environ.get("NOME_COGNOME", "DIPENDENTE").replace(" ", "_")
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
