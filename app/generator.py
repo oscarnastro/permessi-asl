@@ -39,16 +39,13 @@ def _format_intervalli_per_document(intervalli):
 def _format_single_interval(item):
     if item["data_dal"] == item["data_al"]:
         return _fmt_date(item["data_dal"])
-    return f"{_fmt_date(item['data_dal'])} - {_fmt_date(item['data_al'])}"
+    return f"dal {_fmt_date(item['data_dal'])} al {_fmt_date(item['data_al'])}"
 
 
 def _format_intervalli_single_field(intervalli):
     if not intervalli:
         return "___"
-    return " / ".join(
-        f"dal {_fmt_date(item['data_dal'])} al {_fmt_date(item['data_al'])}"
-        for item in intervalli
-    )
+   return ", ".join(_format_single_interval(item) for item in intervalli)
 
 
 def generate_documents(tipo_permesso: str, intervalli, output_dir: str):
